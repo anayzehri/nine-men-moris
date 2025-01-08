@@ -10,7 +10,7 @@ const pointsData = [
 
 const mills = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
-    [9, 10, 11], [12, 13, 14], 
+    [9, 10, 11], [12, 13, 14],
     [15, 16, 17], [18, 19, 20], [21, 22, 23],
     [0, 9, 21], [3, 10, 18], [6, 11, 15],
     [1, 4, 7], [16, 19, 22],
@@ -44,11 +44,12 @@ const neighbors = {
     22: [19, 21, 23],
     23: [14, 22]
 };
+
 const themeToggle = document.getElementById('theme-toggle');
 const container = document.querySelector('.container');
 const localTheme = localStorage.getItem('theme')
 
-if(localTheme === 'dark') {
+if (localTheme === 'dark') {
     container.classList.add('dark-theme')
     themeToggle.innerHTML = '☀️';
 } else {
@@ -60,7 +61,7 @@ themeToggle.addEventListener('click', () => {
         localStorage.setItem('theme', 'dark')
         themeToggle.innerHTML = '☀️';
     } else {
-         localStorage.setItem('theme', 'light')
+        localStorage.setItem('theme', 'light')
         themeToggle.innerHTML = '🌙';
     }
 });
@@ -70,6 +71,7 @@ const messageDiv = document.querySelector('.message');
 const blackScoreSpan = document.getElementById('black-score');
 const whiteScoreSpan = document.getElementById('white-score');
 const resetButton = document.getElementById('reset-button');
+const aiLevelSelect = document.getElementById('ai-level'); // Get the AI level select element
 
 let boardState = Array(24).fill(null);
 let currentPlayer = 'black';
@@ -78,17 +80,18 @@ let whitePiecesLeft = 9;
 let placingPhase = true;
 let selectedPieceIndex = null;
 let canRemovePiece = false; // NEW: Flag to indicate if a piece can be removed
+let aiLevel = 'easy'; // Default AI level
 
 function createPoints() {
     pointsData.forEach((point, index) => {
         const pointDiv = document.createElement('div');
-        pointDiv.classList.add('point'); // Removed 'empty' class here
+        pointDiv.classList.add('point');
         pointDiv.style.left = `${point.x}%`;
         pointDiv.style.top = `${point.y}%`;
         pointDiv.dataset.index = index;
         pointDiv.addEventListener('click', handlePointClick);
         pointsContainer.appendChild(pointDiv);
-        updatePointVisualState(pointDiv, null); // Set initial visual state
+        updatePointVisualState(pointDiv, null);
     });
 }
 
@@ -104,19 +107,22 @@ function updatePointVisualState(pointDiv, player) {
 }
 
 function handlePointClick(event) {
-    const pointIndex = parseInt(event.target.dataset.index);
+    const pointIndex = parseInt(event?.target?.dataset?.index);
 
     if (canRemovePiece) {
         removeOpponentPiece(pointIndex);
         return;
     }
 
-    if (placingPhase) {
+    if (currentPlayer === 'black') {
+      if (placingPhase) {
         handlePlacement(pointIndex);
-    } else {
+      } else {
         handleMovement(pointIndex);
+      }
     }
 }
+
 
 function handlePlacement(pointIndex) {
     if (boardState[pointIndex] === null) {
@@ -134,10 +140,10 @@ function handlePlacement(pointIndex) {
 
         const formedMill = checkMill(pointIndex, currentPlayer);
         if (formedMill) {
-            canRemovePiece = true; // Set the flag to allow removal
+            canRemovePiece = true;
             updateMessage("Mill formed! " + currentPlayer.toUpperCase() + ", remove an opponent's piece.");
-            drawMillLine(formedMill); // Draw the green line
-            highlightMillPieces(formedMill); // Highlight the pieces forming the mill
+            drawMillLine(formedMill);
+            highlightMillPieces(formedMill);
         } else {
             switchTurn();
         }
@@ -145,6 +151,9 @@ function handlePlacement(pointIndex) {
         if (blackPiecesLeft === 0 && whitePiecesLeft === 0) {
             placingPhase = false;
             updateMessage(currentPlayer.toUpperCase() + "'s turn to move.");
+        }
+         if (currentPlayer === 'white' && !placingPhase) {
+            setTimeout(aiMove, 500); // Make AI move after a delay
         }
     }
 }
@@ -157,17 +166,17 @@ function handleMovement(targetIndex) {
             updateBoardDisplay();
             removeHighlights();
             removeMillLines();
-            removeMillHighlight(); // Remove previous mill highlight
+            removeMillHighlight();
 
             const formedMill = checkMill(targetIndex, currentPlayer);
             if (formedMill) {
                 canRemovePiece = true;
                 updateMessage("Mill formed! " + currentPlayer.toUpperCase() + ", remove an opponent's piece.");
                 drawMillLine(formedMill);
-                highlightMillPieces(formedMill); // Highlight the pieces forming the mill
+                highlightMillPieces(formedMill);
             } else {
                 switchTurn();
-                if (!placingPhase) { // Only check win condition after placing phase
+                if (!placingPhase) {
                     checkWinCondition();
                 }
             }
@@ -181,7 +190,11 @@ function handleMovement(targetIndex) {
         selectedPieceIndex = targetIndex;
         highlightMoves(targetIndex);
     }
+       if (currentPlayer === 'white' && !placingPhase) {
+        setTimeout(aiMove, 500); // Make AI move after a delay
+    }
 }
+
 
 function highlightMoves(pieceIndex) {
     removeHighlights();
@@ -211,11 +224,11 @@ function checkMill(pointIndex, player) {
         if (mill.includes(pointIndex)) {
             const [a, b, c] = mill;
             if (boardState[a] === player && boardState[b] === player && boardState[c] === player) {
-                return mill; // Return the indices of the mill
+                return mill;
             }
         }
     }
-    return null; // Return null if no mill is formed
+    return null;
 }
 
 function drawMillLine(millIndices) {
@@ -240,15 +253,15 @@ function drawMillLine(millIndices) {
 
     const line = document.createElement('div');
     line.classList.add('mill-line');
-    pointsContainer.appendChild(line); // Append to the points container
+    pointsContainer.appendChild(line);
 
-    if (Math.abs(centerY1 - centerY2) < 1 && Math.abs(centerY2 - centerY3) < 1) { // Horizontal
+    if (Math.abs(centerY1 - centerY2) < 1 && Math.abs(centerY2 - centerY3) < 1) {
         line.style.width = `${Math.max(centerX1, centerX2, centerX3) - Math.min(centerX1, centerX2, centerX3)}px`;
-        line.style.top = `${centerY1 - 3}px`; // Adjust for line thickness
+        line.style.top = `${centerY1 - 3}px`;
         line.style.left = `${Math.min(centerX1, centerX2, centerX3)}px`;
-    } else if (Math.abs(centerX1 - centerX2) < 1 && Math.abs(centerX2 - centerX3) < 1) { // Vertical
+    } else if (Math.abs(centerX1 - centerX2) < 1 && Math.abs(centerX2 - centerX3) < 1) {
         line.style.height = `${Math.max(centerY1, centerY2, centerY3) - Math.min(centerY1, centerY2, centerY3)}px`;
-        line.style.left = `${centerX1 - 3}px`; // Adjust for line thickness
+        line.style.left = `${centerX1 - 3}px`;
         line.style.top = `${Math.min(centerY1, centerY2, centerY3)}px`;
     }
 }
@@ -272,32 +285,31 @@ function removeMillHighlight() {
 
 function removeOpponentPiece(pointIndex) {
     const opponent = currentPlayer === 'black' ? 'white' : 'black';
-    console.log("removeOpponentPiece - Before removal:", boardState); // ADD THIS LINE
-    if (boardState[pointIndex] === opponent && !isPieceInMill(pointIndex, opponent)) {
+     if (boardState[pointIndex] === opponent && !isPieceInMill(pointIndex, opponent)) {
         boardState[pointIndex] = null;
         updateBoardDisplay();
-        canRemovePiece = false; // Reset the flag after removal
-        removeMillLines(); // Remove mill line after removing a piece
-        removeMillHighlight(); // Remove the mill highlight after removal
+        canRemovePiece = false;
+        removeMillLines();
+        removeMillHighlight();
         switchTurn();
-        if (!placingPhase) { // Only check win condition after placing phase
+        if (!placingPhase) {
             checkWinCondition();
         }
     } else if (boardState[pointIndex] === opponent && canOnlyRemoveFromMill(opponent)) {
         boardState[pointIndex] = null;
         updateBoardDisplay();
-        canRemovePiece = false; // Reset the flag after removal
-        removeMillLines(); // Remove mill line after removing a piece
-        removeMillHighlight(); // Remove the mill highlight after removal
+        canRemovePiece = false;
+        removeMillLines();
+        removeMillHighlight();
         switchTurn();
-        if (!placingPhase) { // Only check win condition after placing phase
+         if (!placingPhase) {
             checkWinCondition();
         }
     } else {
-        updateMessage("Invalid removal. Choose an opponent's piece not in a mill (unless all their pieces are in mills).");
+         updateMessage("Invalid removal. Choose an opponent's piece not in a mill (unless all their pieces are in mills).");
     }
-    console.log("removeOpponentPiece - After removal:", boardState); // ADD THIS LINE
 }
+
 function isPieceInMill(pointIndex, player) {
     for (const mill of mills) {
         if (mill.includes(pointIndex)) {
@@ -325,9 +337,13 @@ function canOnlyRemoveFromMill(player) {
 function switchTurn() {
     currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
     updateMessage(currentPlayer.toUpperCase() + "'s turn.");
-    removeMillHighlight(); // Remove mill highlight when the turn changes without a mill
+    removeMillHighlight();
     updateTurnIndicator();
+    if (currentPlayer === 'white' && !placingPhase) {
+        setTimeout(aiMove, 500); // Make AI move after a delay
+    }
 }
+
 function updateTurnIndicator() {
     if (currentPlayer === 'black') {
         blackScoreSpan.parentElement.classList.add('current-turn');
@@ -338,7 +354,6 @@ function updateTurnIndicator() {
     }
 }
 
-// Call updateTurnIndicator initially
 updateTurnIndicator();
 
 function updateMessage(message) {
@@ -348,29 +363,27 @@ function updateMessage(message) {
 function updateBoardDisplay() {
     document.querySelectorAll('.point').forEach((pointDiv, index) => {
         updatePointVisualState(pointDiv, boardState[index]);
-        pointDiv.classList.remove('highlight', 'mill-highlight'); // Remove these here for clarity
+        pointDiv.classList.remove('highlight', 'mill-highlight');
     });
-    console.log("Before checkWinCondition - Board State:", boardState); // ADD THIS LINE
-    if (!placingPhase) { // Only check win condition after placing phase
+     if (!placingPhase) {
         checkWinCondition();
     }
 }
 
 function hasLegalMoves(player) {
-    for (let i = 0; i < boardState.length; i++) {
+     for (let i = 0; i < boardState.length; i++) {
         if (boardState[i] === player) {
-            // Check if this piece has any empty neighbors
             const neighborsOfPiece = neighbors[i];
             if (neighborsOfPiece) {
                 for (const neighborIndex of neighborsOfPiece) {
                     if (boardState[neighborIndex] === null) {
-                        return true; // Found a legal move
+                        return true;
                     }
                 }
             }
         }
     }
-    return false; // No legal moves found for this player
+    return false;
 }
 
 function checkWinCondition() {
@@ -379,25 +392,25 @@ function checkWinCondition() {
 
     if (whitePieces < 3) {
         updateMessage("Black wins!");
-        return true; // Indicate game over
+        return true;
     }
 
     if (blackPieces < 3) {
         updateMessage("White wins!");
-        return true; // Indicate game over
+        return true;
     }
 
-    if (!placingPhase) {
+      if (!placingPhase) {
         if (currentPlayer === 'black' && !hasLegalMoves('black')) {
             updateMessage("White wins! Black cannot move.");
-            return true; // Indicate game over
+            return true;
         }
         if (currentPlayer === 'white' && !hasLegalMoves('white')) {
             updateMessage("Black wins! White cannot move.");
-            return true; // Indicate game over
+            return true;
         }
     }
-    return false; // No win condition met yet
+    return false;
 }
 
 function resetGame() {
@@ -415,11 +428,343 @@ function resetGame() {
     whiteScoreSpan.textContent = whitePiecesLeft;
     removeHighlights();
     removeMillLines();
-    removeMillHighlight(); // Ensure mill highlight is removed on reset
+    removeMillHighlight();
 }
 
+
+// AI Logic
+function aiMove() {
+    if (canRemovePiece) {
+        aiRemovePiece();
+    } else if (placingPhase) {
+        aiPlacePiece();
+    } else {
+        aiMovePiece();
+    }
+}
+
+
+function aiPlacePiece() {
+    let bestMove = -1;
+    let bestScore = -Infinity;
+    for (let i = 0; i < boardState.length; i++) {
+        if (boardState[i] === null) {
+             boardState[i] = 'white'
+             let score = calculateMoveScore('white');
+            if (score > bestScore) {
+                bestScore = score;
+                bestMove = i;
+            }
+             boardState[i] = null;
+        }
+    }
+    if (bestMove !== -1) {
+        handlePlacement(bestMove);
+    }
+}
+
+
+function aiMovePiece() {
+    let bestMove = null;
+     let bestScore = -Infinity;
+
+    for (let i = 0; i < boardState.length; i++) {
+        if (boardState[i] === 'white') {
+            const moves = neighbors[i];
+            for(const target of moves){
+                if(boardState[target]===null){
+                    boardState[target] = 'white';
+                    boardState[i] = null;
+                    let score = calculateMoveScore('white');
+                      if(score>bestScore){
+                        bestScore = score;
+                        bestMove = {from: i, to: target};
+                    }
+                     boardState[target] = null;
+                     boardState[i] = 'white';
+                }
+            }
+        }
+    }
+      if (bestMove) {
+        selectedPieceIndex = bestMove.from;
+        handleMovement(bestMove.to);
+    }
+}
+
+
+function aiRemovePiece() {
+    let bestRemove = -1;
+    let bestScore = -Infinity
+     for (let i = 0; i < boardState.length; i++) {
+         if (boardState[i] === 'black' && !isPieceInMill(i, 'black') ) {
+              boardState[i] = null;
+             let score = calculateRemoveScore('white');
+            if (score > bestScore) {
+                bestScore = score;
+                bestRemove = i;
+            }
+            boardState[i] = 'black'
+         }
+    }
+    if(bestRemove === -1){
+        for (let i = 0; i < boardState.length; i++) {
+            if (boardState[i] === 'black') {
+                bestRemove = i;
+                break;
+            }
+        }
+    }
+    removeOpponentPiece(bestRemove);
+}
+
+function calculateMoveScore(player) {
+    let score = 0;
+      const opponent = player === 'black' ? 'white' : 'black';
+    if(aiLevel === 'easy') {
+        return Math.random() - 0.5;
+    }
+    if(aiLevel === 'medium') {
+       for (const mill of mills) {
+            const [a, b, c] = mill;
+            let playerPieces = 0;
+            let opponentPieces = 0;
+
+            if (boardState[a] === player) playerPieces++;
+            if (boardState[b] === player) playerPieces++;
+            if (boardState[c] === player) playerPieces++;
+
+            if (boardState[a] === opponent) opponentPieces++;
+            if (boardState[b] === opponent) opponentPieces++;
+            if (boardState[c] === opponent) opponentPieces++;
+
+            if (playerPieces === 2 && !opponentPieces) score += 5; // potential mill
+            if (playerPieces === 3) score += 15; //complete mill
+            if (opponentPieces === 2 && !playerPieces) score -= 10; // Prevent opponent mill
+        }
+       for (let i = 0; i < boardState.length; i++) {
+            if (boardState[i] === player && hasLegalMoves(player)) {
+             score += 1;
+           }
+       }
+      for (let i = 0; i < boardState.length; i++) {
+        if(boardState[i]=== player){
+              const moves = neighbors[i];
+            for (const target of moves){
+              if(boardState[target] === null){
+                  score += 2
+                  boardState[target] = player;
+                 if(checkMill(target, player)){
+                    score += 10
+                 }
+                 boardState[target] = null
+                }
+            }
+        }
+       }
+        return score + Math.random() * 2 - 1;
+    }
+
+    if(aiLevel === 'hard'){
+           for (const mill of mills) {
+            const [a, b, c] = mill;
+            let playerPieces = 0;
+            let opponentPieces = 0;
+
+            if (boardState[a] === player) playerPieces++;
+            if (boardState[b] === player) playerPieces++;
+            if (boardState[c] === player) playerPieces++;
+
+            if (boardState[a] === opponent) opponentPieces++;
+            if (boardState[b] === opponent) opponentPieces++;
+            if (boardState[c] === opponent) opponentPieces++;
+
+            if (playerPieces === 2 && !opponentPieces) score += 10; // potential mill
+            if (playerPieces === 3) score += 30; //complete mill
+             if (opponentPieces === 2 && !playerPieces) score -= 20; // Prevent opponent mill
+        }
+
+        for (let i = 0; i < boardState.length; i++) {
+            if (boardState[i] === player && hasLegalMoves(player)) {
+                 score += 2;
+             }
+         }
+
+          for (let i = 0; i < boardState.length; i++) {
+            if(boardState[i]=== player){
+                  const moves = neighbors[i];
+                for (const target of moves){
+                  if(boardState[target] === null){
+                      score += 3
+                      boardState[target] = player;
+                     if(checkMill(target, player)){
+                        score += 20
+                     }
+                     boardState[target] = null
+                    }
+                }
+            }
+        }
+        return score
+    }
+    return 0;
+}
+
+function calculateRemoveScore(player){
+  let score = 0;
+  const opponent = player === 'black' ? 'white' : 'black';
+  if(aiLevel === 'easy'){
+      return Math.random() - 0.5;
+    }
+    if(aiLevel === 'medium') {
+       for (const mill of mills) {
+            const [a, b, c] = mill;
+            let playerPieces = 0;
+            let opponentPieces = 0;
+
+            if (boardState[a] === player) playerPieces++;
+            if (boardState[b] === player) playerPieces++;
+            if (boardState[c] === player) playerPieces++;
+
+            if (boardState[a] === opponent) opponentPieces++;
+            if (boardState[b] === opponent) opponentPieces++;
+            if (boardState[c] === opponent) opponentPieces++;
+
+            if (playerPieces === 2 && !opponentPieces) score += 5; // potential mill
+            if (playerPieces === 3) score += 15; //complete mill
+            if (opponentPieces === 2 && !playerPieces) score -= 10; // Prevent opponent mill
+        }
+       for (let i = 0; i < boardState.length; i++) {
+            if (boardState[i] === player && hasLegalMoves(player)) {
+             score += 1;
+           }
+       }
+      for (let i = 0; i < boardState.length; i++) {
+        if(boardState[i]=== player){
+              const moves = neighbors[i];
+            for (const target of moves){
+              if(boardState[target] === null){
+                  score += 2
+                  boardState[target] = player;
+                 if(checkMill(target, player)){
+                    score += 10
+                 }
+                 boardState[target] = null
+                }
+            }
+        }
+       }
+        return score + Math.random() * 2 - 1;
+    }
+
+    if(aiLevel === 'hard'){
+           for (const mill of mills) {
+            const [a, b, c] = mill;
+            let playerPieces = 0;
+            let opponentPieces = 0;
+
+            if (boardState[a] === player) playerPieces++;
+            if (boardState[b] === player) playerPieces++;
+            if (boardState[c] === player) playerPieces++;
+
+            if (boardState[a] === opponent) opponentPieces++;
+            if (boardState[b] === opponent) opponentPieces++;
+            if (boardState[c] === opponent) opponentPieces++;
+
+            if (playerPieces === 2 && !opponentPieces) score += 10; // potential mill
+            if (playerPieces === 3) score += 30; //complete mill
+             if (opponentPieces === 2 && !playerPieces) score -= 20; // Prevent opponent mill
+        }
+
+        for (let i = 0; i < boardState.length; i++) {
+            if (boardState[i] === player && hasLegalMoves(player)) {
+                 score += 2;
+             }
+         }
+
+          for (let i = 0; i < boardState.length; i++) {
+            if(boardState[i]=== player){
+                  const moves = neighbors[i];
+                for (const target of moves){
+                  if(boardState[target] === null){
+                      score += 3
+                      boardState[target] = player;
+                     if(checkMill(target, player)){
+                        score += 20
+                     }
+                     boardState[target] = null
+                    }
+                }
+            }
+        }
+        return score
+    }
+    return 0;
+}
+
+function calculateRemoveScore(player){
+  let score = 0;
+  const opponent = player === 'black' ? 'white' : 'black';
+  if(aiLevel === 'easy'){
+      return Math.random() - 0.5;
+  }
+  if(aiLevel === 'medium'){
+        for (const mill of mills) {
+            const [a, b, c] = mill;
+            let playerPieces = 0;
+            let opponentPieces = 0;
+
+            if (boardState[a] === player) playerPieces++;
+            if (boardState[b] === player) playerPieces++;
+            if (boardState[c] === player) playerPieces++;
+
+            if (boardState[a] === opponent) opponentPieces++;
+            if (boardState[b] === opponent) opponentPieces++;
+            if (boardState[c] === opponent) opponentPieces++;
+              if (opponentPieces === 2 && !playerPieces) score += 10; // Prevent opponent mill
+        }
+           for (let i = 0; i < boardState.length; i++) {
+             if (boardState[i] === opponent ) {
+                 score += 2;
+                if (isPieceInMill(i, opponent)){
+                     score -= 2;
+                }
+             }
+         }
+         return score + Math.random() * 2 - 1;
+  }
+  if(aiLevel === 'hard'){
+       for (const mill of mills) {
+            const [a, b, c] = mill;
+            let playerPieces = 0;
+            let opponentPieces = 0;
+
+            if (boardState[a] === player) playerPieces++;
+            if (boardState[b] === player) playerPieces++;
+            if (boardState[c] === player) playerPieces++;
+
+            if (boardState[a] === opponent) opponentPieces++;
+            if (boardState[b] === opponent) opponentPieces++;
+            if (boardState[c] === opponent) opponentPieces++;
+               if (opponentPieces === 2 && !playerPieces) score += 20; // Prevent opponent mill
+        }
+         for (let i = 0; i < boardState.length; i++) {
+             if (boardState[i] === opponent ) {
+                 score += 5;
+                if (isPieceInMill(i, opponent)){
+                     score -= 3;
+                }
+             }
+         }
+         return score;
+  }
+  return 0;
+}
 // Event Listeners
 resetButton.addEventListener('click', resetGame);
+aiLevelSelect.addEventListener('change', (event) => {
+    aiLevel = event.target.value;
+});
 
 // Initial setup
 createPoints();
