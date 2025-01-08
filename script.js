@@ -445,9 +445,8 @@ function resetGame() {
     if (aiEnabled && currentPlayer === 'white') {
         setTimeout(makeAiMove, 500);
     }
-}
+}// AI Logic
 
-// AI Logic
 function makeAiMove() {
     const level = aiLevelSelect.value;
     switch (level) {
@@ -479,33 +478,29 @@ function makeAiRemove() {
 }
 
 function makeEasyAiRemove() {
-    const opponentPieces = boardState.reduce((acc, piece, index) => {
-        if (piece === 'black') acc.push(index);
-        return acc;
-    }, []);
+    const opponentPieces = getPlayerPieces(boardState, 'black');
     if (opponentPieces.length > 0) {
-        const randomIndex = Math.floor(Math.random() * opponentPieces.length);
-        removeOpponentPiece(opponentPieces[randomIndex]);
+        // Slightly improve easy AI: Try not to remove pieces in a mill if possible
+        const nonMillPieces = opponentPieces.filter(index => !isPieceInMill(index, 'black'));
+        const piecesToRemoveFrom = nonMillPieces.length > 0 ? nonMillPieces : opponentPieces;
+        const randomIndex = Math.floor(Math.random() * piecesToRemoveFrom.length);
+        removeOpponentPiece(piecesToRemoveFrom[randomIndex]);
     }
 }
 
 function makeMediumAiRemove() {
-    // Try to remove a piece that doesn't form an immediate threat
-    const removablePieces = boardState.reduce((acc, piece, index) => {
-        if (piece === 'black' && !isPieceInMill(index, 'black')) acc.push(index);
-        return acc;
-    }, []);
+    const opponentPieces = getPlayerPieces(boardState, 'black');
+    if (opponentPieces.length > 0) {
+        // Prioritize removing pieces not in a mill
+        const removablePieces = opponentPieces.filter(index => !isPieceInMill(index, 'black'));
 
-    if (removablePieces.length > 0) {
-        const randomIndex = Math.floor(Math.random() * removablePieces.length);
-        removeOpponentPiece(removablePieces[randomIndex]);
-    } else {
-        // If all opponent pieces are in mills (or no pieces left), remove a random one
-        const opponentPieces = boardState.reduce((acc, piece, index) => {
-            if (piece === 'black') acc.push(index);
-            return acc;
-        }, []);
-        if (opponentPieces.length > 0) {
+        if (removablePieces.length > 0) {
+            // Medium AI tries to be a bit smarter about which non-mill piece to remove
+            // For now, let's just pick randomly among the non-mill pieces
+            const randomIndex = Math.floor(Math.random() * removablePieces.length);
+            removeOpponentPiece(removablePieces[randomIndex]);
+        } else {
+            // If all opponent pieces are in mills, remove a random one (same as before)
             const randomIndex = Math.floor(Math.random() * opponentPieces.length);
             removeOpponentPiece(opponentPieces[randomIndex]);
         }
@@ -517,26 +512,20 @@ function makeHardAiRemove() {
     if (bestRemoval !== -1) {
         removeOpponentPiece(bestRemoval);
     } else {
-        // Fallback to random if no "best" move is found (shouldn't happen often)
+        // Fallback to medium if no "best" move is found (shouldn't happen often if findBestRemovalMove is well-implemented)
         makeMediumAiRemove();
     }
 }
 
 function makeEasyAiMove() {
     if (placingPhase) {
-        const emptySpots = boardState.reduce((acc, piece, index) => {
-            if (piece === null) acc.push(index);
-            return acc;
-        }, []);
+        const emptySpots = getEmptySpots(boardState);
         if (emptySpots.length > 0) {
             const randomIndex = Math.floor(Math.random() * emptySpots.length);
             handlePlacement(emptySpots[randomIndex]);
         }
     } else {
-        const aiPieces = boardState.reduce((acc, piece, index) => {
-            if (piece === 'white') acc.push(index);
-            return acc;
-        }, []);
+        const aiPieces = getPlayerPieces(boardState, 'white');
         if (aiPieces.length > 0) {
             const randomPieceIndex = aiPieces[Math.floor(Math.random() * aiPieces.length)];
             const possibleMoves = neighbors[randomPieceIndex].filter(index => boardState[index] === null);
@@ -556,7 +545,7 @@ function makeMediumAiMove() {
             boardState[i] = 'white';
             if (checkMill(i, 'white')) {
                 boardState[i] = null;
-                handlePlacement(i);
+                handlePlacement(i); // Assuming handlePlacement correctly manages the placement phase
                 return;
             }
             boardState[i] = null;
@@ -569,7 +558,7 @@ function makeMediumAiMove() {
             boardState[i] = 'black'; // Temporarily place opponent's piece
             if (checkMill(i, 'black')) {
                 boardState[i] = null;
-                handlePlacement(i);
+                handlePlacement(i); // Assuming handlePlacement correctly manages the placement phase
                 return;
             }
             boardState[i] = null;
@@ -608,10 +597,7 @@ function makeHardAiMove() {
 function findBestPlacementMove(currentBoard) {
     let bestScore = -Infinity;
     let bestMove = -1;
-    const emptySpots = currentBoard.reduce((acc, piece, index) => {
-        if (piece === null) acc.push(index);
-        return acc;
-    }, []);
+    const emptySpots = getEmptySpots(currentBoard);
 
     for (const spot of emptySpots) {
         const newBoardState = [...currentBoard];
@@ -628,122 +614,39 @@ function findBestPlacementMove(currentBoard) {
 function findBestRemovalMove(currentBoard) {
     let bestScore = -Infinity;
     let bestMove = -1;
-    const opponentPieces = currentBoard.reduce((acc, piece, index) => {
-        if (piece === 'black' && !isPieceInMill(index, 'black')) acc.push(index);
-        return acc;
-    }, []);
+    const opponentPieces = getPlayerPieces(currentBoard, 'black').filter(index => !isPieceInMill(index, 'black'));
+    const allOpponentPieces = getPlayerPieces(currentBoard, 'black'); // For fallback
 
-    if (opponentPieces.length === 0) {
-        return -1; // No safe pieces to remove
-    }
+    const piecesToConsider = opponentPieces.length > 0 ? opponentPieces : allOpponentPieces;
 
-    for (const pieceIndex of opponentPieces) {
+    for (const pieceIndexToRemove of piecesToConsider) {
         const newBoardState = [...currentBoard];
-        newBoardState[pieceIndex] = null;
-        let score = evaluateBoard(newBoardState, 'white', false); // Simple evaluation after removal
+        newBoardState[pieceIndexToRemove] = null; // Simulate removal
+        // Evaluate the board state after the opponent's piece is removed
+        // The evaluation should be from the AI's perspective (white)
+        let score = evaluateBoard(newBoardState, 'white', true); // More complex evaluation for removal
+
         if (score > bestScore) {
             bestScore = score;
-            bestMove = pieceIndex;
+            bestMove = pieceIndexToRemove;
         }
     }
     return bestMove;
 }
 
-function findBestMove(currentBoard) {
-    let bestScore = -Infinity;
-    let bestMove = null;
-    const aiPieces = currentBoard.reduce((acc, piece, index) => {
-        if (piece === 'white') acc.push(index);
+// Helper functions (moved here for clarity and to avoid repetition)
+function getEmptySpots(board) {
+    return board.reduce((acc, piece, index) => {
+        if (piece === null) acc.push(index);
         return acc;
     }, []);
-
-    for (const pieceIndex of aiPieces) {
-        const possibleMoves = neighbors[pieceIndex].filter(index => currentBoard[index] === null);
-        for (const moveTo of possibleMoves) {
-            const newBoardState = [...currentBoard];
-            newBoardState[moveTo] = 'white';
-            newBoardState[pieceIndex] = null;
-            let score = minimax(newBoardState, 3, false); // Depth 3 search
-            if (score > bestScore) {
-                bestScore = score;
-                bestMove = { from: pieceIndex, to: moveTo };
-            }
-        }
-    }
-    return bestMove;
 }
 
-function minimax(board, depth, isMaximizingPlayer) {
-    if (depth === 0 || checkTerminal(board)) {
-        return evaluateBoard(board, 'white', true);
-    }
-
-    if (isMaximizingPlayer) {
-        let bestScore = -Infinity;
-        const aiPieces = board.reduce((acc, piece, index) => {
-            if (piece === 'white') acc.push(index);
-            return acc;
-        }, []);
-        for (const pieceIndex of aiPieces) {
-            const possibleMoves = neighbors[pieceIndex].filter(index => board[index] === null);
-            for (const moveTo of possibleMoves) {
-                const newBoardState = [...board];
-                newBoardState[moveTo] = 'white';
-                newBoardState[pieceIndex] = null;
-                bestScore = Math.max(bestScore, minimax(newBoardState, depth - 1, false));
-            }
-        }
-        return bestScore;
-    } else {
-        let bestScore = Infinity;
-        const humanPieces = board.reduce((acc, piece, index) => {
-            if (piece === 'black') acc.push(index);
-            return acc;
-        }, []);
-        for (const pieceIndex of humanPieces) {
-            const possibleMoves = neighbors[pieceIndex].filter(index => board[index] === null);
-            for (const moveTo of possibleMoves) {
-                const newBoardState = [...board];
-                newBoardState[moveTo] = 'black';
-                newBoardState[pieceIndex] = null;
-                bestScore = Math.min(bestScore, minimax(newBoardState, depth - 1, true));
-            }
-        }
-        return bestScore;
-    }
-}
-
-function evaluateBoard(board, player, includeGameState) {
-    let score = 0;
-    const aiPieces = board.filter(p => p === 'white').length;
-    const humanPieces = board.filter(p => p === 'black').length;
-
-    score += (aiPieces - humanPieces) * 10;
-
-    for (const mill of mills) {
-        const [a, b, c] = mill;
-        if (board[a] === player && board[b] === player && board[c] === player) {
-            score += 50; // Reward forming a mill
-        }
-    }
-    if (includeGameState) {
-        if (aiPieces < 3) score = -Infinity;
-        if (humanPieces < 3) score = Infinity;
-        if (!canMove('white') && aiPieces > 3) score = -Infinity;
-        if (!canMove('black') && humanPieces > 3) score = Infinity;
-    }
-
-    return score;
-}
-
-function checkTerminal(board) {
-    const whitePieces = board.filter(piece => piece === 'white').length;
-    const blackPieces = board.filter(piece => piece === 'black').length;
-
-    if (whitePieces < 3 || blackPieces < 3) return true;
-    if (!canMove('white') || !canMove('black')) return true;
-
-    return false;
+function getPlayerPieces(board, player) {
+    return board.reduce((acc, piece, index) => {
+        if (piece === player) acc.push(index);
+        return acc;
+    }, []);
 }
 
 // Event Listeners
