@@ -44,7 +44,6 @@ const neighbors = {
     22: [19, 21, 23],
     23: [14, 22]
 };
-
 const themeToggle = document.getElementById('theme-toggle');
 const container = document.querySelector('.container');
 const localTheme = localStorage.getItem('theme')
@@ -71,7 +70,7 @@ const messageDiv = document.querySelector('.message');
 const blackScoreSpan = document.getElementById('black-score');
 const whiteScoreSpan = document.getElementById('white-score');
 const resetButton = document.getElementById('reset-button');
-const aiLevelSelect = document.getElementById('ai-level'); // Get the AI level select element
+const aiLevelSelect = document.getElementById('ai-level');
 
 let boardState = Array(24).fill(null);
 let currentPlayer = 'black';
@@ -79,56 +78,56 @@ let blackPiecesLeft = 9;
 let whitePiecesLeft = 9;
 let placingPhase = true;
 let selectedPieceIndex = null;
-let canRemovePiece = false; // NEW: Flag to indicate if a piece can be removed
-let aiLevel = 'easy'; // Default AI level
+let canRemovePiece = false;
+let aiEnabled = false;
 
 function createPoints() {
     pointsData.forEach((point, index) => {
         const pointDiv = document.createElement('div');
-        pointDiv.classList.add('point');
+        pointDiv.classList.add('point', 'empty');
         pointDiv.style.left = `${point.x}%`;
         pointDiv.style.top = `${point.y}%`;
         pointDiv.dataset.index = index;
         pointDiv.addEventListener('click', handlePointClick);
         pointsContainer.appendChild(pointDiv);
-        updatePointVisualState(pointDiv, null);
     });
 }
 
-function updatePointVisualState(pointDiv, player) {
-    pointDiv.classList.remove('empty', 'black', 'white');
-    if (player === 'black') {
-        pointDiv.classList.add('black');
-    } else if (player === 'white') {
-        pointDiv.classList.add('white');
-    } else {
-        pointDiv.classList.add('empty');
+function updatePointVisualState(pointIndex, player) {
+    const pointDiv = document.querySelector(`.point[data-index="${pointIndex}"]`);
+    if (pointDiv) {
+        pointDiv.classList.remove('empty', 'black', 'white');
+        if (player === 'black') {
+            pointDiv.classList.add('black');
+        } else if (player === 'white') {
+            pointDiv.classList.add('white');
+        } else {
+            pointDiv.classList.add('empty');
+        }
     }
 }
 
 function handlePointClick(event) {
-    const pointIndex = parseInt(event?.target?.dataset?.index);
+    if (aiEnabled && currentPlayer === 'white') return; // Disable human input during AI turn
+
+    const pointIndex = parseInt(event.target.dataset.index);
 
     if (canRemovePiece) {
         removeOpponentPiece(pointIndex);
         return;
     }
 
-    if (currentPlayer === 'black') {
-        if (placingPhase) {
-            handlePlacement(pointIndex);
-        } else {
-            handleMovement(pointIndex);
-        }
+    if (placingPhase) {
+        handlePlacement(pointIndex);
+    } else {
+        handleMovement(pointIndex);
     }
 }
-
 
 function handlePlacement(pointIndex) {
     if (boardState[pointIndex] === null) {
         boardState[pointIndex] = currentPlayer;
-        const pointDiv = document.querySelector(`.point[data-index="${pointIndex}"]`);
-        updatePointVisualState(pointDiv, currentPlayer);
+        updatePointVisualState(pointIndex, currentPlayer);
 
         if (currentPlayer === 'black') {
             blackPiecesLeft--;
@@ -151,9 +150,6 @@ function handlePlacement(pointIndex) {
         if (blackPiecesLeft === 0 && whitePiecesLeft === 0) {
             placingPhase = false;
             updateMessage(currentPlayer.toUpperCase() + "'s turn to move.");
-        }
-        if (currentPlayer === 'white' && !placingPhase) {
-            aiMove(); // Make AI move immediately
         }
     }
 }
@@ -190,11 +186,7 @@ function handleMovement(targetIndex) {
         selectedPieceIndex = targetIndex;
         highlightMoves(targetIndex);
     }
-    if (currentPlayer === 'white' && !placingPhase) {
-        aiMove(); // Make AI move immediately
-    }
 }
-
 
 function highlightMoves(pieceIndex) {
     removeHighlights();
@@ -285,17 +277,7 @@ function removeMillHighlight() {
 
 function removeOpponentPiece(pointIndex) {
     const opponent = currentPlayer === 'black' ? 'white' : 'black';
-    if (boardState[pointIndex] === opponent && !isPieceInMill(pointIndex, opponent)) {
-        boardState[pointIndex] = null;
-        updateBoardDisplay();
-        canRemovePiece = false;
-        removeMillLines();
-        removeMillHighlight();
-        switchTurn();
-        if (!placingPhase) {
-            checkWinCondition();
-        }
-    } else if (boardState[pointIndex] === opponent && canOnlyRemoveFromMill(opponent)) {
+    if (boardState[pointIndex] === opponent && (!isPieceInMill(pointIndex, opponent) || canOnlyRemoveFromMill(opponent))) {
         boardState[pointIndex] = null;
         updateBoardDisplay();
         canRemovePiece = false;
@@ -309,6 +291,7 @@ function removeOpponentPiece(pointIndex) {
         updateMessage("Invalid removal. Choose an opponent's piece not in a mill (unless all their pieces are in mills).");
     }
 }
+
 function isPieceInMill(pointIndex, player) {
     for (const mill of mills) {
         if (mill.includes(pointIndex)) {
@@ -338,8 +321,9 @@ function switchTurn() {
     updateMessage(currentPlayer.toUpperCase() + "'s turn.");
     removeMillHighlight();
     updateTurnIndicator();
-    if (currentPlayer === 'white' && !placingPhase) {
-        aiMove(); // Make AI move immediately
+
+    if (aiEnabled && currentPlayer === 'white') {
+        setTimeout(makeAiMove, 500); // Add a delay for AI move
     }
 }
 
@@ -361,7 +345,7 @@ function updateMessage(message) {
 
 function updateBoardDisplay() {
     document.querySelectorAll('.point').forEach((pointDiv, index) => {
-        updatePointVisualState(pointDiv, boardState[index]);
+        updatePointVisualState(index, boardState[index]);
         pointDiv.classList.remove('highlight', 'mill-highlight');
     });
     if (!placingPhase) {
@@ -380,6 +364,7 @@ function hasLegalMoves(player) {
                     }
                 }
             }
+            if (blackPiecesLeft + whitePiecesLeft === 0) return true; // If flying is allowed
         }
     }
     return false;
@@ -400,13 +385,33 @@ function checkWinCondition() {
     }
 
     if (!placingPhase) {
-        if (currentPlayer === 'black' && !hasLegalMoves('black')) {
+        if (currentPlayer === 'black' && !canMove('black')) {
             updateMessage("White wins! Black cannot move.");
             return true;
         }
-        if (currentPlayer === 'white' && !hasLegalMoves('white')) {
+        if (currentPlayer === 'white' && !canMove('white')) {
             updateMessage("Black wins! White cannot move.");
             return true;
+        }
+    }
+    return false;
+}
+
+function canMove(player) {
+    for (let i = 0; i < boardState.length; i++) {
+        if (boardState[i] === player) {
+            if (blackPiecesLeft + whitePiecesLeft === 0) { // Flying phase
+                for (let j = 0; j < boardState.length; j++) {
+                    if (boardState[j] === null) return true;
+                }
+            } else {
+                const legalMoves = neighbors[i];
+                if (legalMoves) {
+                    for (const move of legalMoves) {
+                        if (boardState[move] === null) return true;
+                    }
+                }
+            }
         }
     }
     return false;
@@ -420,6 +425,7 @@ function resetGame() {
     placingPhase = true;
     selectedPieceIndex = null;
     canRemovePiece = false;
+    aiEnabled = aiLevelSelect.value !== 'off';
 
     updateBoardDisplay();
     updateMessage(currentPlayer.toUpperCase() + "'s turn to place piece.");
@@ -428,249 +434,323 @@ function resetGame() {
     removeHighlights();
     removeMillLines();
     removeMillHighlight();
-}
+    updateTurnIndicator();
 
+    if (aiEnabled && currentPlayer === 'white') {
+        setTimeout(makeAiMove, 500);
+    }
+}
 
 // AI Logic
-function aiMove() {
-    if (canRemovePiece) {
-        aiRemovePiece();
-    } else if (placingPhase) {
-        aiPlacePiece();
-    } else {
-        aiMovePiece();
+function makeAiMove() {
+    const level = aiLevelSelect.value;
+    switch (level) {
+        case 'easy':
+            makeEasyAiMove();
+            break;
+        case 'medium':
+            makeMediumAiMove();
+            break;
+        case 'hard':
+            makeHardAiMove();
+            break;
     }
 }
 
+function makeEasyAiMove() {
+    if (canRemovePiece) {
+        const opponentPieces = boardState.reduce((acc, piece, index) => {
+            if (piece === 'black') acc.push(index);
+            return acc;
+        }, []);
+        if (opponentPieces.length > 0) {
+            const randomIndex = Math.floor(Math.random() * opponentPieces.length);
+            removeOpponentPiece(opponentPieces[randomIndex]);
+        }
+        return;
+    }
 
-function aiPlacePiece() {
-    let bestMove = -1;
-    let bestScore = -Infinity;
+    if (placingPhase) {
+        const emptySpots = boardState.reduce((acc, piece, index) => {
+            if (piece === null) acc.push(index);
+            return acc;
+        }, []);
+        if (emptySpots.length > 0) {
+            const randomIndex = Math.floor(Math.random() * emptySpots.length);
+            handlePlacement(emptySpots[randomIndex]);
+        }
+    } else {
+        const aiPieces = boardState.reduce((acc, piece, index) => {
+            if (piece === 'white') acc.push(index);
+            return acc;
+        }, []);
+        if (aiPieces.length > 0) {
+            const randomPieceIndex = aiPieces[Math.floor(Math.random() * aiPieces.length)];
+            const possibleMoves = neighbors[randomPieceIndex].filter(index => boardState[index] === null);
+            if (possibleMoves.length > 0) {
+                const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                selectedPieceIndex = randomPieceIndex;
+                handleMovement(randomMove);
+            }
+        }
+    }
+}
+
+function makeMediumAiMove() {
+    // Try to form a mill
     for (let i = 0; i < boardState.length; i++) {
         if (boardState[i] === null) {
-            boardState[i] = 'white'
-            let score = calculateMoveScore('white');
-            if (score > bestScore) {
-                bestScore = score;
-                bestMove = i;
+            boardState[i] = 'white';
+            if (checkMill(i, 'white')) {
+                boardState[i] = null;
+                handlePlacement(i);
+                return;
             }
             boardState[i] = null;
         }
     }
-    if (bestMove !== -1) {
-        handlePlacement(bestMove);
+
+    // Try to block opponent's mill
+    for (let i = 0; i < boardState.length; i++) {
+        if (boardState[i] === null) {
+            boardState[i] = 'black';
+            if (checkMill(i, 'black')) {
+                boardState[i] = null;
+                handlePlacement(i);
+                return;
+            }
+            boardState[i] = null;
+        }
+    }
+
+    // Remove opponent piece if can form mill
+    if (canRemovePiece) {
+        const removablePieces = boardState.reduce((acc, piece, index) => {
+            if (piece === 'black' && !isPieceInMill(index, 'black')) acc.push(index);
+            return acc;
+        }, []);
+        if (removablePieces.length > 0) {
+            const randomIndex = Math.floor(Math.random() * removablePieces.length);
+            removeOpponentPiece(removablePieces[randomIndex]);
+            return;
+        } else {
+            const opponentPieces = boardState.reduce((acc, piece, index) => {
+                if (piece === 'black') acc.push(index);
+                return acc;
+            }, []);
+            if (opponentPieces.length > 0) {
+                const randomIndex = Math.floor(Math.random() * opponentPieces.length);
+                removeOpponentPiece(opponentPieces[randomIndex]);
+                return;
+            }
+        }
+    }
+
+    // If placing, place randomly
+    if (placingPhase) {
+        const emptySpots = boardState.reduce((acc, piece, index) => {
+            if (piece === null) acc.push(index);
+            return acc;
+        }, []);
+        if (emptySpots.length > 0) {
+            const randomIndex = Math.floor(Math.random() * emptySpots.length);
+            handlePlacement(emptySpots[randomIndex]);
+        }
+    } else {
+        // Move randomly
+        const aiPieces = boardState.reduce((acc, piece, index) => {
+            if (piece === 'white') acc.push(index);
+            return acc;
+        }, []);
+        if (aiPieces.length > 0) {
+            const randomPieceIndex = aiPieces[Math.floor(Math.random() * aiPieces.length)];
+            const possibleMoves = neighbors[randomPieceIndex].filter(index => boardState[index] === null);
+            if (possibleMoves.length > 0) {
+                const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                selectedPieceIndex = randomPieceIndex;
+                handleMovement(randomMove);
+            }
+        }
     }
 }
 
+function makeHardAiMove() {
+    if (canRemovePiece) {
+        const bestRemoval = findBestRemovalMove(boardState);
+        if (bestRemoval !== -1) {
+            removeOpponentPiece(bestRemoval);
+            return;
+        }
+    }
 
-function aiMovePiece() {
-    let bestMove = null;
+    if (placingPhase) {
+        const bestPlacement = findBestPlacementMove(boardState);
+        if (bestPlacement !== -1) {
+            handlePlacement(bestPlacement);
+        }
+    } else {
+        const bestMove = findBestMove(boardState);
+        if (bestMove) {
+            selectedPieceIndex = bestMove.from;
+            handleMovement(bestMove.to);
+        }
+    }
+}
+
+// Minimax implementation for Hard AI
+function findBestPlacementMove(currentBoard) {
     let bestScore = -Infinity;
+    let bestMove = -1;
+    const emptySpots = currentBoard.reduce((acc, piece, index) => {
+        if (piece === null) acc.push(index);
+        return acc;
+    }, []);
 
-    for (let i = 0; i < boardState.length; i++) {
-        if (boardState[i] === 'white') {
-            const moves = neighbors[i];
-            for (const target of moves) {
-                if (boardState[target] === null) {
-                    boardState[target] = 'white';
-                    boardState[i] = null;
-                    let score = calculateMoveScore('white');
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestMove = { from: i, to: target };
-                    }
-                    boardState[target] = null;
-                    boardState[i] = 'white';
-                }
-            }
+    for (const spot of emptySpots) {
+        const newBoardState = [...currentBoard];
+        newBoardState[spot] = 'white';
+        let score = evaluateBoard(newBoardState, 'white', false); // Simple evaluation for placement
+        if (score > bestScore) {
+            bestScore = score;
+            bestMove = spot;
         }
     }
-    if (bestMove) {
-        selectedPieceIndex = bestMove.from;
-        handleMovement(bestMove.to);
-    }
+    return bestMove;
 }
 
+function findBestRemovalMove(currentBoard) {
+    let bestScore = -Infinity;
+    let bestMove = -1;
+    const opponentPieces = currentBoard.reduce((acc, piece, index) => {
+        if (piece === 'black' && !isPieceInMill(index, 'black')) acc.push(index);
+        return acc;
+    }, []);
 
-function aiRemovePiece() {
-    let bestRemove = -1;
-    let bestScore = -Infinity
-    for (let i = 0; i < boardState.length; i++) {
-        if (boardState[i] === 'black' && !isPieceInMill(i, 'black')) {
-            boardState[i] = null;
-            let score = calculateRemoveScore('white');
+    if (opponentPieces.length === 0) {
+        const allOpponentPieces = currentBoard.reduce((acc, piece, index) => {
+            if (piece === 'black') acc.push(index);
+            return acc;
+        }, []);
+        if (allOpponentPieces.length > 0) return allOpponentPieces[0];
+        return -1;
+    }
+
+    for (const pieceIndex of opponentPieces) {
+        const newBoardState = [...currentBoard];
+        newBoardState[pieceIndex] = null;
+        let score = evaluateBoard(newBoardState, 'white', false); // Simple evaluation after removal
+        if (score > bestScore) {
+            bestScore = score;
+            bestMove = pieceIndex;
+        }
+    }
+    return bestMove;
+}
+
+function findBestMove(currentBoard) {
+    let bestScore = -Infinity;
+    let bestMove = null;
+    const aiPieces = currentBoard.reduce((acc, piece, index) => {
+        if (piece === 'white') acc.push(index);
+        return acc;
+    }, []);
+
+    for (const pieceIndex of aiPieces) {
+        const possibleMoves = neighbors[pieceIndex].filter(index => currentBoard[index] === null);
+        for (const moveTo of possibleMoves) {
+            const newBoardState = [...currentBoard];
+            newBoardState[moveTo] = 'white';
+            newBoardState[pieceIndex] = null;
+            let score = minimax(newBoardState, 3, false); // Depth 3 search
             if (score > bestScore) {
                 bestScore = score;
-                bestRemove = i;
-            }
-            boardState[i] = 'black'
-        }
-    }
-    if (bestRemove === -1) {
-        for (let i = 0; i < boardState.length; i++) {
-            if (boardState[i] === 'black') {
-                bestRemove = i;
-                break;
+                bestMove = { from: pieceIndex, to: moveTo };
             }
         }
     }
-    removeOpponentPiece(bestRemove);
+    return bestMove;
 }
 
-function calculateMoveScore(player) {
+function minimax(board, depth, isMaximizingPlayer) {
+    if (depth === 0 || checkTerminal(board)) {
+        return evaluateBoard(board, 'white', true);
+    }
+
+    if (isMaximizingPlayer) {
+        let bestScore = -Infinity;
+        const aiPieces = board.reduce((acc, piece, index) => {
+            if (piece === 'white') acc.push(index);
+            return acc;
+        }, []);
+        for (const pieceIndex of aiPieces) {
+            const possibleMoves = neighbors[pieceIndex].filter(index => board[index] === null);
+            for (const moveTo of possibleMoves) {
+                const newBoardState = [...board];
+                newBoardState[moveTo] = 'white';
+                newBoardState[pieceIndex] = null;
+                bestScore = Math.max(bestScore, minimax(newBoardState, depth - 1, false));
+            }
+        }
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+        const humanPieces = board.reduce((acc, piece, index) => {
+            if (piece === 'black') acc.push(index);
+            return acc;
+        }, []);
+        for (const pieceIndex of humanPieces) {
+            const possibleMoves = neighbors[pieceIndex].filter(index => board[index] === null);
+            for (const moveTo of possibleMoves) {
+                const newBoardState = [...board];
+                newBoardState[moveTo] = 'black';
+                newBoardState[pieceIndex] = null;
+                bestScore = Math.min(bestScore, minimax(newBoardState, depth - 1, true));
+            }
+        }
+        return bestScore;
+    }
+}
+
+function evaluateBoard(board, player, includeGameState) {
     let score = 0;
-    const opponent = player === 'black' ? 'white' : 'black';
-    if (aiLevel === 'easy') {
-        return Math.random() - 0.5;
+    const aiPieces = board.filter(p => p === 'white').length;
+    const humanPieces = board.filter(p => p === 'black').length;
+
+    score += (aiPieces - humanPieces) * 10;
+
+    for (const mill of mills) {
+        const [a, b, c] = mill;
+        if (board[a] === player && board[b] === player && board[c] === player) {
+            score += 50; // Reward forming a mill
+        } else if (board[a] !== 'black' && board[b] !== 'black' && board[c] !== 'black') {
+            //Potentially reward open mills for future moves
+        }
     }
-    if (aiLevel === 'medium') {
-        for (const mill of mills) {
-            const [a, b, c] = mill;
-            let playerPieces = 0;
-            let opponentPieces = 0;
-
-            if (boardState[a] === player) playerPieces++;
-            if (boardState[b] === player) playerPieces++;
-            if (boardState[c] === player) playerPieces++;
-
-            if (boardState[a] === opponent) opponentPieces++;
-            if (boardState[b] === opponent) opponentPieces++;
-            if (boardState[c] === opponent) opponentPieces++;
-
-            if (playerPieces === 2 && !opponentPieces) score += 5; // potential mill
-            if (playerPieces === 3) score += 15; //complete mill
-            if (opponentPieces === 2 && !playerPieces) score -= 10; // Prevent opponent mill
-        }
-        for (let i = 0; i < boardState.length; i++) {
-            if (boardState[i] === player && hasLegalMoves(player)) {
-                score += 1;
-            }
-        }
-        for (let i = 0; i < boardState.length; i++) {
-            if (boardState[i] === player) {
-                const moves = neighbors[i];
-                for (const target of moves) {
-                    if (boardState[target] === null) {
-                        score += 2
-                        boardState[target] = player;
-                        if (checkMill(target, player)) {
-                            score += 10
-                        }
-                        boardState[target] = null
-                    }
-                }
-            }
-        }
-        return score + Math.random() * 2 - 1;
+    if (includeGameState) {
+        if (aiPieces < 3) score = -Infinity;
+        if (humanPieces < 3) score = Infinity;
+        if (!canMove('white') && aiPieces > 3) score = -Infinity;
+        if (!canMove('black') && humanPieces > 3) score = Infinity;
     }
 
-    if (aiLevel === 'hard') {
-        for (const mill of mills) {
-            const [a, b, c] = mill;
-            let playerPieces = 0;
-            let opponentPieces = 0;
-
-            if (boardState[a] === player) playerPieces++;
-            if (boardState[b] === player) playerPieces++;
-            if (boardState[c] === player) playerPieces++;
-
-            if (boardState[a] === opponent) opponentPieces++;
-            if (boardState[b] === opponent) opponentPieces++;
-            if (boardState[c] === opponent) opponentPieces++;
-
-            if (playerPieces === 2 && !opponentPieces) score += 10; // potential mill
-            if (playerPieces === 3) score += 30; //complete mill
-            if (opponentPieces === 2 && !playerPieces) score -= 20; // Prevent opponent mill
-        }
-
-        for (let i = 0; i < boardState.length; i++) {
-            if (boardState[i] === player && hasLegalMoves(player)) {
-                score += 2;
-            }
-        }
-
-        for (let i = 0; i < boardState.length; i++) {
-            if (boardState[i] === player) {
-                const moves = neighbors[i];
-                for (const target of moves) {
-                    if (boardState[target] === null) {
-                        score += 3
-                        boardState[target] = player;
-                        if (checkMill(target, player)) {
-                            score += 20
-                        }
-                        boardState[target] = null
-                    }
-                }
-            }
-        }
-        return score
-    }
-    return 0;
+    return score;
 }
 
-function calculateRemoveScore(player) {
-    let score = 0;
-    const opponent = player === 'black' ? 'white' : 'black';
-    if (aiLevel === 'easy') {
-        return Math.random() - 0.5;
-    }
-    if (aiLevel === 'medium') {
-        for (const mill of mills) {
-            const [a, b, c] = mill;
-            let playerPieces = 0;
-            let opponentPieces = 0;
+function checkTerminal(board) {
+    const whitePieces = board.filter(piece => piece === 'white').length;
+    const blackPieces = board.filter(piece => piece === 'black').length;
 
-            if (boardState[a] === player) playerPieces++;
-            if (boardState[b] === player) playerPieces++;
-            if (boardState[c] === player) playerPieces++;
+    if (whitePieces < 3 || blackPieces < 3) return true;
+    if (!canMove('white') || !canMove('black')) return true;
 
-            if (boardState[a] === opponent) opponentPieces++;
-            if (boardState[b] === opponent) opponentPieces++;
-            if (boardState[c] === opponent) opponentPieces++;
-            if (opponentPieces === 2 && !playerPieces) score += 10; // Prevent opponent mill
-        }
-        for (let i = 0; i < boardState.length; i++) {
-            if (boardState[i] === opponent) {
-                score += 2;
-                if (isPieceInMill(i, opponent)) {
-                    score -= 2;
-                }
-            }
-        }
-        return score + Math.random() * 2 - 1;
-    }
-    if (aiLevel === 'hard') {
-        for (const mill of mills) {
-            const [a, b, c] = mill;
-            let playerPieces = 0;
-            let opponentPieces = 0;
-
-            if (boardState[a] === player) playerPieces++;
-            if (boardState[b] === player) playerPieces++;
-            if (boardState[c] === player) playerPieces++;
-
-            if (boardState[a] === opponent) opponentPieces++;
-            if (boardState[b] === opponent) opponentPieces++;
-            if (boardState[c] === opponent) opponentPieces++;
-            if (opponentPieces === 2 && !playerPieces) score += 20; // Prevent opponent mill
-        }
-        for (let i = 0; i < boardState.length; i++) {
-            if (boardState[i] === opponent) {
-                score += 5;
-                if (isPieceInMill(i, opponent)) {
-                    score -= 3;
-                }
-            }
-        }
-        return score;
-    }
-    return 0;
+    return false;
 }
+
 // Event Listeners
 resetButton.addEventListener('click', resetGame);
-aiLevelSelect.addEventListener('change', (event) => {
-    aiLevel = event.target.value;
+aiLevelSelect.addEventListener('change', () => {
+    aiEnabled = aiLevelSelect.value !== 'off';
+    resetGame(); // Reset the game when AI level changes
 });
 
 // Initial setup
