@@ -1,44 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Nine Men's Morris</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <header>
-            <button id="theme-toggle" aria-label="Toggle color theme">🌙</button>
-            <h1>Nine Men's Morris</h1>
-        </header>
-
-        <div class="controls">
-            <label for="ai-level">Play against AI:</label>
-            <select id="ai-level">
-                <option value="off">Off</option>
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-            </select>
+        <h1>Nine Men's Morris</h1>
+        <button id="theme-toggle">🌙</button>
+        <div class="scores">
+            <div class="player-score current-turn">Black: <span id="black-score">9</span></div>
+            <div class="player-score">White: <span id="white-score">9</span></div>
         </div>
-
-        <div class="score" aria-live="polite">
-            <div class="player-score black-score" aria-label="Black player score">Black: <span id="black-score">9</span></div>
-            <div class="player-score white-score" aria-label="White player score">White: <span id="white-score">9</span></div>
+        <div class="game-board">
+            <div class="points"></div>
         </div>
-
-        <main class="game-board" aria-label="Nine Men's Morris Game Board">
-            <img id="board-img" src="board.png" alt="Game Board">
-            <div class="points" aria-label="Game points, clickable to place or move pieces">
-                <!-- Point elements will be generated here by JavaScript -->
-            </div>
-        </main>
-
-        <div class="message" role="status" aria-live="polite"></div>
+        <div class="message"></div>
         <button id="reset-button">Reset Game</button>
     </div>
-    <script src="script.js"></script> <!- Your main game logic -->
-<script src="ai.js"></script>
+    <script src="script.js"></script>
+    <script src="ai.js"></script>
 </body>
 </html>
