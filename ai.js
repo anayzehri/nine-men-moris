@@ -1,247 +1,284 @@
 // ai.js
 
-// --- Helper Functions (may be shared with the main game) ---
+// Data structures and constants needed for AI logic
+const pointsData = [
+    { x: 5, y: 3.5 }, { x: 50.5, y: 3.5 }, { x: 96, y: 3.5 },
+    { x: 16.5, y: 19 }, { x: 50.5, y: 18.5 }, { x: 82, y: 19 },
+    { x: 36.5, y: 35.3 }, { x: 50.5, y: 35.3 }, { x: 65, y: 35.3 },
+    { x: 5, y: 50 }, { x: 16.5, y: 50 }, { x: 36.5, y: 50 }, { x: 65, y: 50 }, { x: 83, y: 50 }, { x: 96, y: 50 },
+    { x: 36.5, y: 65 }, { x: 50.5, y: 65 }, { x: 65, y: 65 },
+    { x: 16.5, y: 82.5 }, { x: 50, y: 82 }, { x: 83, y: 82 },
+    { x: 5, y: 97 }, { x: 50, y: 97 }, { x: 96, y: 97 }
+];
 
-function getOpponent(player) {
-    return player === 'black' ? 'white' : 'black';
+const mills = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [9, 10, 11], [12, 13, 14],
+    [15, 16, 17], [18, 19, 20], [21, 22, 23],
+    [0, 9, 21], [3, 10, 18], [6, 11, 15],
+    [1, 4, 7], [16, 19, 22],
+    [8, 12, 17], [5, 13, 20],
+    [2, 14, 23]
+];
+
+const neighbors = {
+    0: [1, 9],
+    1: [0, 2, 4],
+    2: [1, 14],
+    3: [4, 10],
+    4: [1, 3, 5, 7],
+    5: [4, 13],
+    6: [7, 11],
+    7: [4, 6, 8],
+    8: [7, 12],
+    9: [0, 10, 21],
+    10: [3, 9, 11, 18],
+    11: [6, 10, 15],
+    12: [8, 13, 17],
+    13: [5, 12, 14, 20],
+    14: [2, 13, 23],
+    15: [11, 16],
+    16: [15, 17, 19],
+    17: [12, 16],
+    18: [10, 19],
+    19: [16, 18, 20, 22],
+    20: [13, 19],
+    21: [9, 22],
+    22: [19, 21, 23],
+    23: [14, 22]
+};
+
+// AI Logic
+export function evaluateBoard(board, maximizingPlayer) {
+    let score = 0;
+    const aiPlayer = maximizingPlayer ? 'red' : 'blue';
+    const opponent = maximizingPlayer ? 'blue' : 'red';
+
+    for (const mill of mills) {
+        const [a, b, c] = mill;
+        const pieces = [board[a], board[b], board[c]];
+        const aiPieces = pieces.filter(p => p === aiPlayer).length;
+        const opponentPieces = pieces.filter(p => p === opponent).length;
+
+        if (aiPieces === 3) score += 10;
+        else if (aiPieces === 2 && pieces.includes(null)) score += 7;
+
+        if (opponentPieces === 3) score -= 10;
+        else if (opponentPieces === 2 && pieces.includes(null)) score -= 7;
+    }
+
+    const aiMoves = getAllPossibleMoves(board, aiPlayer).length;
+    const opponentMoves = getAllPossibleMoves(board, opponent).length;
+    score += (aiMoves - opponentMoves) * 0.5;
+
+    return maximizingPlayer ? score : -score;
 }
 
-function isPointEmpty(board, index) {
-    return board[index] === null;
+export function getAllPossibleMoves(board, player) {
+    const possibleMoves = [];
+    const playerPieces = board.reduce((acc, piece, index) => {
+        if (piece === player) acc.push(index);
+        return acc;
+    }, []);
+    const canMoveAnywhere = playerPieces.length === 3;
+
+    for (const pieceIndex of playerPieces) {
+        const moves = canMoveAnywhere ? board.reduce((acc, piece, index) => { if (piece === null) acc.push(index); return acc; }, []) : neighbors[pieceIndex];
+        for (const move of moves) {
+            if (board[move] === null) {
+                possibleMoves.push([pieceIndex, move]);
+            }
+        }
+    }
+    return possibleMoves;
 }
 
-function getPlayerPieces(board, player) {
-    return board.reduce((acc, piece, index) => {
+export function findBestPlaceMove(board) {
+    let bestScore = -Infinity;
+    let bestMove = -1;
+
+    const emptyPoints = board.reduce((acc, piece, index) => {
+        if (piece === null) acc.push(index);
+        return acc;
+    }, []);
+
+    for (const point of emptyPoints) {
+        board[point] = 'red';
+        const score = minimaxPlace(board, 3, -Infinity, Infinity, false);
+        board[point] = null;
+
+        if (score > bestScore) {
+            bestScore = score;
+            bestMove = point;
+        }
+    }
+    return bestMove;
+}
+
+function minimaxPlace(board, depth, alpha, beta, isMaximizingPlayer) {
+    if (depth === 0 || checkWinConditionAI(board)) {
+        return evaluateBoard(board, true);
+    }
+
+    if (isMaximizingPlayer) {
+        let maxEval = -Infinity;
+        const emptyPoints = board.reduce((acc, piece, index) => {
+            if (piece === null) acc.push(index);
+            return acc;
+        }, []);
+        for (const point of emptyPoints) {
+            board[point] = 'red';
+            const eval = minimaxPlace(board, depth - 1, alpha, beta, false);
+            board[point] = null;
+            maxEval = Math.max(maxEval, eval);
+            alpha = Math.max(alpha, eval);
+            if (beta <= alpha) break;
+        }
+        return maxEval;
+    } else {
+        let minEval = Infinity;
+        const emptyPoints = board.reduce((acc, piece, index) => {
+            if (piece === null) acc.push(index);
+            return acc;
+        }, []);
+        for (const point of emptyPoints) {
+            board[point] = 'blue';
+            const eval = minimaxPlace(board, depth - 1, alpha, beta, true);
+            board[point] = null;
+            minEval = Math.min(minEval, eval);
+            beta = Math.min(beta, eval);
+            if (beta <= alpha) break;
+        }
+        return minEval;
+    }
+}
+
+export function minimax(board, depth, alpha, beta, isMaximizingPlayer) {
+    if (depth === 0 || checkWinConditionAI(board)) {
+        return evaluateBoard(board, true);
+    }
+
+    const aiPlayer = isMaximizingPlayer ? 'red' : 'blue';
+    const opponent = isMaximizingPlayer ? 'blue' : 'red';
+    const pieces = board.reduce((acc, piece, index) => {
+        if (piece === aiPlayer) acc.push(index);
+        return acc;
+    }, []);
+    const isFlying = pieces.length === 3;
+
+    if (isMaximizingPlayer) {
+        let maxEval = -Infinity;
+        for (const pieceIndex of pieces) {
+            const possibleMoves = isFlying
+                ? board.reduce((acc, piece, index) => piece === null ? [...acc, index] : acc, [])
+                : neighbors[pieceIndex];
+            for (const targetIndex of possibleMoves) {
+                if (board[targetIndex] === null) {
+                    const originalPosition = board[targetIndex];
+                    board[targetIndex] = aiPlayer;
+                    board[pieceIndex] = null;
+                    const eval = minimax(board, depth - 1, alpha, beta, false);
+                    board[targetIndex] = originalPosition;
+                    board[pieceIndex] = aiPlayer;
+                    maxEval = Math.max(maxEval, eval);
+                    alpha = Math.max(alpha, eval);
+                    if (beta <= alpha) break;
+                }
+            }
+             if (beta <= alpha) break;
+        }
+        return maxEval;
+    } else {
+        let minEval = Infinity;
+        const pieces = board.reduce((acc, piece, index) => {
+            if (piece === opponent) acc.push(index);
+            return acc;
+        }, []);
+        const isFlying = pieces.length === 3;
+
+        for (const pieceIndex of pieces) {
+            const possibleMoves = isFlying
+                ? board.reduce((acc, piece, index) => piece === null ? [...acc, index] : acc, [])
+                : neighbors[pieceIndex];
+            for (const targetIndex of possibleMoves) {
+                if (board[targetIndex] === null) {
+                    const originalPosition = board[targetIndex];
+                    board[targetIndex] = opponent;
+                    board[pieceIndex] = null;
+                    const eval = minimax(board, depth - 1, alpha, beta, true);
+                    board[targetIndex] = originalPosition;
+                    board[pieceIndex] = opponent;
+                    minEval = Math.min(minEval, eval);
+                    beta = Math.min(beta, eval);
+                    if (beta <= alpha) break;
+                }
+            }
+             if (beta <= alpha) break;
+        }
+        return minEval;
+    }
+}
+
+export function checkWinConditionAI(board) {
+    const bluePieces = board.filter(piece => piece === 'blue').length;
+    const redPieces = board.filter(piece => piece === 'red').length;
+
+    if (redPieces < 3) {
+        return true;
+    }
+
+    if (bluePieces < 3) {
+        return true;
+    }
+
+    if (!isPlacingPhaseAI(board)) {
+        if (!hasLegalMovesAI(board, 'blue')) {
+            return true;
+        }
+        if (!hasLegalMovesAI(board, 'red')) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function isPlacingPhaseAI(board) {
+    return board.filter(p => p !== null).length < 18;
+}
+
+function hasLegalMovesAI(board, player) {
+    const playerPiecesIndices = board.reduce((acc, piece, index) => {
         if (piece === player) {
             acc.push(index);
         }
         return acc;
     }, []);
-}
 
-function getEmptyPoints(board) {
-    return board.reduce((acc, piece, index) => {
-        if (piece === null) {
-            acc.push(index);
+    for (const pieceIndex of playerPiecesIndices) {
+        const canMoveAnywhere = playerPiecesIndices.length === 3;
+        const moves = canMoveAnywhere ? board.reduce((acc, piece, index) => { if (piece === null) acc.push(index); return acc; }, []) : neighbors[pieceIndex];
+
+        if (moves.some(neighborIndex => board[neighborIndex] === null)) {
+            return true;
         }
-        return acc;
-    }, []);
+    }
+    return false;
 }
 
-function checkMill(board, pointIndex, player, mills) {
+export function isPieceInMillAI(pointIndex, board, player) {
     for (const mill of mills) {
         if (mill.includes(pointIndex)) {
             const [a, b, c] = mill;
             if (board[a] === player && board[b] === player && board[c] === player) {
-                return mill;
-            }
-        }
-    }
-    return null;
-}
-
-function getAllFormedMills(board, player, mills) {
-    const formedMills = [];
-    for (let i = 0; i < board.length; i++) {
-        if (board[i] === player) {
-            const mill = checkMill(board, i, player, mills);
-            if (mill && !formedMills.some(m => arraysAreEqual(m, mill))) {
-                formedMills.push(mill);
-            }
-        }
-    }
-    return formedMills;
-}
-
-function arraysAreEqual(arr1, arr2) {
-    if (arr1.length !== arr2.length) return false;
-    for (let i = 0; i < arr1.length; i++) {
-        if (arr1[i] !== arr2[i]) return false;
-    }
-    return true;
-}
-
-function getPossibleMoves(board, player, neighbors) {
-    const moves = [];
-    const playerPieces = getPlayerPieces(board, player);
-
-    for (const pieceIndex of playerPieces) {
-        const possibleMovesFromPiece = neighbors[pieceIndex]
-            .filter(neighborIndex => isPointEmpty(board, neighborIndex))
-            .map(targetIndex => ({ from: pieceIndex, to: targetIndex }));
-        moves.push(...possibleMovesFromPiece);
-    }
-    return moves;
-}
-
-// --- AI Logic ---
-
-const AI = {
-    makePlacementMove: function (board) {
-        const emptyPoints = getEmptyPoints(board);
-        // Simple strategy: Place on any empty point
-        // A more advanced AI would evaluate the strategic value of each point
-        return emptyPoints[Math.floor(Math.random() * emptyPoints.length)];
-    },
-
-    makeMovementMove: function (board, player, neighbors) {
-        const possibleMoves = getPossibleMoves(board, player, neighbors);
-        if (possibleMoves.length === 0) {
-            return null; // No legal moves
-        }
-
-        // Simple strategy: Choose a random legal move
-        // A more advanced AI would evaluate the outcome of each move
-        return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-    },
-
-    makeRemovalMove: function (board, opponent, mills) {
-        const opponentPieces = getPlayerPieces(board, opponent);
-        const opponentPiecesNotInMill = opponentPieces.filter(pieceIndex => {
-            return !checkMill(board, pieceIndex, opponent, mills);
-        });
-
-        if (opponentPiecesNotInMill.length > 0) {
-            // Try to remove a piece not in a mill
-            return opponentPiecesNotInMill[Math.floor(Math.random() * opponentPiecesNotInMill.length)];
-        } else if (opponentPieces.length > 0) {
-            // If all opponent pieces are in mills, remove a random one
-            return opponentPieces[Math.floor(Math.random() * opponentPieces.length)];
-        }
-        return null; // Should not happen if a mill was just formed
-    },
-
-    // More advanced AI using minimax (basic implementation)
-    findBestMove: function (board, player, placingPhase, neighbors, mills) {
-        const opponent = getOpponent(player);
-        let bestMove = null;
-        let bestScore = -Infinity; // For maximizing player
-
-        if (placingPhase) {
-            const emptyPoints = getEmptyPoints(board);
-            for (const pointIndex of emptyPoints) {
-                const newBoard = [...board];
-                newBoard[pointIndex] = player;
-                const score = this.minimax(newBoard, 2, false, opponent, placingPhase, neighbors, mills); // Basic depth of 2
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = pointIndex;
-                }
-            }
-            return bestMove;
-        } else {
-            const possibleMoves = getPossibleMoves(board, player, neighbors);
-            for (const move of possibleMoves) {
-                const newBoard = [...board];
-                newBoard[move.to] = player;
-                newBoard[move.from] = null;
-                const score = this.minimax(newBoard, 2, false, opponent, placingPhase, neighbors, mills); // Basic depth of 2
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = move;
-                }
-            }
-            return bestMove;
-        }
-    },
-
-    minimax: function (board, depth, isMaximizing, player, placingPhase, neighbors, mills) {
-        const opponent = getOpponent(player);
-        if (depth === 0 || this.isGameOver(board, player, placingPhase, neighbors)) {
-            return this.evaluateBoard(board, player);
-        }
-
-        if (isMaximizing) {
-            let bestScore = -Infinity;
-            if (placingPhase) {
-                const emptyPoints = getEmptyPoints(board);
-                for (const pointIndex of emptyPoints) {
-                    const newBoard = [...board];
-                    newBoard[pointIndex] = player;
-                    bestScore = Math.max(bestScore, this.minimax(newBoard, depth - 1, false, opponent, placingPhase, neighbors, mills));
-                }
-            } else {
-                const possibleMoves = getPossibleMoves(board, player, neighbors);
-                for (const move of possibleMoves) {
-                    const newBoard = [...board];
-                    newBoard[move.to] = player;
-                    newBoard[move.from] = null;
-                    bestScore = Math.max(bestScore, this.minimax(newBoard, depth - 1, false, opponent, placingPhase, neighbors, mills));
-                }
-            }
-            return bestScore;
-        } else {
-            let bestScore = Infinity;
-            if (placingPhase) {
-                const emptyPoints = getEmptyPoints(board);
-                for (const pointIndex of emptyPoints) {
-                    const newBoard = [...board];
-                    newBoard[pointIndex] = opponent;
-                    bestScore = Math.min(bestScore, this.minimax(newBoard, depth - 1, true, player, placingPhase, neighbors, mills));
-                }
-            } else {
-                const possibleMoves = getPossibleMoves(board, opponent, neighbors);
-                for (const move of possibleMoves) {
-                    const newBoard = [...board];
-                    newBoard[move.to] = opponent;
-                    newBoard[move.from] = null;
-                    bestScore = Math.min(bestScore, this.minimax(newBoard, depth - 1, true, player, placingPhase, neighbors, mills));
-                }
-            }
-            return bestScore;
-        }
-    },
-
-    evaluateBoard: function (board, aiPlayer) {
-        const humanPlayer = getOpponent(aiPlayer);
-        const aiPieces = getPlayerPieces(board, aiPlayer).length;
-        const humanPieces = getPlayerPieces(board, humanPlayer).length;
-
-        // Simple evaluation: prioritize having more pieces
-        let score = aiPieces - humanPieces;
-
-        // Bonus for forming mills
-        const aiMills = getAllFormedMills(board, aiPlayer, mills).length;
-        const humanMills = getAllFormedMills(board, humanPlayer, mills).length;
-        score += aiMills * 5 - humanMills * 5;
-
-        return score;
-    },
-
-    isGameOver: function (board, currentPlayer, placingPhase, neighbors) {
-        const opponent = getOpponent(currentPlayer);
-        const opponentPieces = getPlayerPieces(board, opponent).length;
-
-        if (opponentPieces < 3) {
-            return true;
-        }
-
-        if (!placingPhase) {
-            const canOpponentMove = getPossibleMoves(board, opponent, neighbors).length > 0;
-            if (!canOpponentMove) {
                 return true;
             }
         }
+    }
+    return false;
+}
 
-        return false;
-    },
-
-    findBestRemovalMinimax: function (board, aiPlayer, mills) {
-        const opponent = getOpponent(aiPlayer);
-        const opponentPieces = getPlayerPieces(board, opponent);
-        let bestRemovalIndex = null;
-        let bestScore = -Infinity;
-
-        for (const pieceIndexToRemove of opponentPieces) {
-            const newBoard = [...board];
-            newBoard[pieceIndexToRemove] = null;
-            // Evaluate the board after removal (can use a simple evaluation or look ahead)
-            const score = this.evaluateBoard(newBoard, aiPlayer); // Simple evaluation for now
-            if (score > bestScore) {
-                bestScore = score;
-                bestRemovalIndex = pieceIndexToRemove;
-            }
-        }
-        return bestRemovalIndex;
-    },
-};
+export function canOnlyRemoveFromMillAI(board, player) {
+    const opponentPieces = board.reduce((count, piece) => count + (piece === player ? 1 : 0), 0);
+    if (opponentPieces <= 3) return true;
+    return board.every((piece, index) => piece !== player || isPieceInMillAI(index, board, player));
+}
