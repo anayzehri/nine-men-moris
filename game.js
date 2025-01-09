@@ -551,48 +551,60 @@ function getAllPossibleMoves(board, player) {
 }
 
 
-function makeAIPlacePiece(board) {
-    console.log(`makeAIPlacePiece() - currentPlayer: ${currentPlayer}`);
-    const emptyPoints = board.reduce((acc, piece, index) => {
-        if (piece === null) {
-            acc.push(index);
+
+
+
+function getEmptyPoints(board) {
+    const empty = [];
+    for (let i = 0; i < board.length; i++) {
+        if (board[i] === null) {
+            empty.push(i);
         }
-        return acc;
-    }, []);
+    }
+    return empty;
+}
+
+const aiPlacementStrategies = {
+    'easy': (board) => {
+        const emptyPoints = getEmptyPoints(board);
+        return emptyPoints[Math.floor(Math.random() * emptyPoints.length)];
+    },
+    'medium': (board) => {
+        const emptyPoints = getEmptyPoints(board);
+        let bestScoreMedium = -Infinity;
+        let bestMove;
+        for (const point of emptyPoints) {
+            const tempBoardState = [...board];
+            tempBoardState[point] = 'red'; // Assuming AI is 'red'
+            const score = evaluateBoard(tempBoardState);
+            if (score > bestScoreMedium) {
+                bestScoreMedium = score;
+                bestMove = point;
+            }
+        }
+        return bestMove;
+    },
+    'hard': (board) => findBestPlaceMove(board, 4)
+};
+
+function makeAIPlacePiece(board, currentPlayer, aiDifficulty) {
+    console.log(`makeAIPlacePiece() - currentPlayer: ${currentPlayer}, difficulty: ${aiDifficulty}`);
+
+    const emptyPoints = getEmptyPoints(board);
 
     if (emptyPoints.length > 0) {
-        let bestMove;
-        switch (aiDifficulty) {
-            case 'easy':
-                bestMove = emptyPoints[Math.floor(Math.random() * emptyPoints.length)];
-                break;
-            case 'medium':
-                let bestScoreMedium = -Infinity;
-                 for (const point of emptyPoints) {
-                    // Simulate the placement and evaluate
-                    const tempBoardState = [...board]; // Use a copy
-                    tempBoardState[point] = 'red';
-                    const score = evaluateBoard(tempBoardState); // Pass the copied board state
-                    if (score > bestScoreMedium) {
-                        bestScoreMedium = score;
-                        bestMove = point;
-                    }
-                }
-                break;
-            case 'hard':
-                bestMove = findBestPlaceMove(board, 4);
-                break;
-        }
+        const bestMove = aiPlacementStrategies[aiDifficulty](board);
 
         if (bestMove !== undefined && board[bestMove] === null) {
             console.log(`AI Placing piece at ${bestMove}`);
             handlePlacement(bestMove);
         } else {
             console.error("AI attempted an illegal placement or no valid move found.");
-            // Fallback: Choose a random empty spot if something went wrong
-            if (emptyPoints.length > 0) {
-                const randomMove = emptyPoints[Math.floor(Math.random() * emptyPoints.length)];
-                 console.log(`AI Placing piece at random ${randomMove}`);
+            // Fallback
+            const emptyPointsFallback = getEmptyPoints(board);
+            if (emptyPointsFallback.length > 0) {
+                const randomMove = emptyPointsFallback[Math.floor(Math.random() * emptyPointsFallback.length)];
+                console.log(`AI Placing piece at random ${randomMove}`);
                 handlePlacement(randomMove);
             } else {
                 console.error("No empty spots available, this should not happen.");
@@ -602,8 +614,6 @@ function makeAIPlacePiece(board) {
         console.error("No empty points available for AI placement, this should not happen.");
     }
 }
-
-
 function makeAIMove() {
     console.log(`makeAIMove() - currentPlayer: ${currentPlayer}`);
     const aiPiecesIndices = boardState.reduce((acc, piece, index) => {
