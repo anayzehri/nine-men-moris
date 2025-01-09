@@ -4,26 +4,30 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0e8d8; /* A soft parchment background */
+    background-color: var(--bg-color);
     margin: 0;
     background-image: url('background-texture.jpg'); /* Optional background texture */
     background-size: cover;
     background-blend-mode: overlay;
+    transition: background-color 0.3s ease;
 }
 
 .container {
-    background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white container */
+    background-color: var(--container-bg);
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
     text-align: center;
+    transition: background-color 0.3s ease;
+    position: relative; /* For theme toggle positioning */
 }
 
 h1 {
-    color: #5c4033; /* A deep brown for the title */
+    color: var(--title-color);
     margin-bottom: 20px;
     font-size: 2.5em;
     text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1);
+    transition: color 0.3s ease;
 }
 
 .score {
@@ -37,24 +41,25 @@ h1 {
     font-weight: bold;
     padding: 10px 15px;
     border-radius: 8px;
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out, background-color 0.3s ease, color 0.3s ease;
 }
 
-.black-score {
-    color: #383838; /* Dark grey for black score */
-    background-color: #d4d4d4;
+.blue-score {
+    color: var(--score-black-color);
+    background-color: var(--score-black-bg);
 }
 
-.white-score {
-    color: #ffffff; /* White for white score */
-    background-color: #6e6e6e;
+.red-score {
+    color: var(--score-white-color);
+    background-color: var(--score-white-bg);
 }
 
 .game-board {
     position: relative;
-    max-width: 500px; /* Slightly smaller board */
+    max-width: 500px;
     width: 80vw;
     aspect-ratio: 1 / 1;
-    margin: 0 auto 20px; /* Center the board */
+    margin: 0 auto 20px;
 }
 
 #board-img {
@@ -73,12 +78,12 @@ h1 {
 
 .point {
     position: absolute;
-    width: 30px; /* Increased size for better touch */
+    width: 30px;
     height: 30px;
     border-radius: 50%;
     cursor: pointer;
     transform: translate(-50%, -50%);
-    background-color: transparent; /* Make the point itself transparent */
+    background-color: transparent;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -87,43 +92,51 @@ h1 {
 .point::before {
     content: "";
     display: block;
-    width: 18px; /* Size of the inner dot */
+    width: 18px;
     height: 18px;
     border-radius: 50%;
-    background-color: #c0b3a3; /* A neutral color for empty points */
+    background-color: #c0b3a3;
     border: 2px solid #b0a597;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.point:hover::before {
+    transform: scale(1.1);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 .point.empty::before {
-    background-color: #e8e2d3;
-    border-color: #ddd7c8;
+    background-color: var(--point-empty-bg);
+    border-color: var(--point-empty-border);
 }
 
-.point.black::before {
+.point.blue::before {
     content: "";
     display: block;
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background-color: #383838; /* Solid black piece */
-    border: 2px solid #1a1a1a;
+    background-color: var(--piece-black-bg);
+    border: 2px solid var(--piece-black-border);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-.point.white::before {
+.point.red::before {
     content: "";
     display: block;
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background-color: #ffffff; /* Solid white piece */
-    border: 2px solid #cccccc;
+    background-color: var(--piece-white-bg);
+    border: 2px solid var(--piece-white-border);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
+
+
 .point.highlight::before {
-    outline: 2px solid green; /* Highlight with an outline */
-    outline-offset: 2px;
+    border: 3px solid yellow; /* Distinct border */
+    box-shadow: 0 0 10px yellow; /* Glow effect */
 }
 
 .point.mill-highlight::before {
@@ -132,55 +145,81 @@ h1 {
 
 .mill-line {
     position: absolute;
-    height: 6px; /* Slightly thicker line */
-    background-color: #8bc34a; /* A more vibrant green */
-    border-radius: 3px;
-    z-index: 2; /* Ensure it's above the points */
-    box-shadow: 0 0 8px 4px rgba(139, 195, 74, 0.5); /* Added glow */
+    height: 8px; /* Thicker */
+    background-color: #ffc107; /* Gold color */
+    border-radius: 4px;
+    z-index: 2;
+    box-shadow: 0 0 12px 6px rgba(255, 193, 7, 0.6); /* Stronger glow */
+    animation: millGlow 1s infinite alternate;
+}
+
+@keyframes millGlow {
+    from { opacity: 0.8; }
+    to { opacity: 1; }
 }
 
 .message {
     font-size: 1.2em;
     margin-bottom: 20px;
-    color: #5c4033;
+    color: var(--message-color);
     font-weight: bold;
+    transition: color 0.3s ease;
 }
 
 #reset-button {
     padding: 12px 25px;
     font-size: 1em;
-    background-color: #4CAF50; /* A standard green button */
+    background-color: var(--button-bg);
     color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
 }
 
 #reset-button:hover {
     background-color: #43A047;
-}
-.player-score.current-turn {
-    box-shadow: 0 0 10px 3px #ffdd57; /* Yellow glow for current turn */
     transform: scale(1.05);
-    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
+
+.player-score.current-turn {
+    box-shadow: 0 0 15px 5px #ffdd57; /* Yellow glow */
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.point.invalid-move::before {
+    background-color: #f44336; /* Red warning color */
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
 :root {
     /* Default theme variables */
     --bg-color: #f0e8d8;
     --container-bg: rgba(255, 255, 255, 0.9);
     --title-color: #5c4033;
-    --score-black-color: #383838;
-    --score-black-bg: #d4d4d4;
+    --score-black-color: #ffffff;
+    --score-black-bg: #007bff;
     --score-white-color: #ffffff;
-    --score-white-bg: #6e6e6e;
+    --score-white-bg: #dc3545;
     --point-empty-bg: #e8e2d3;
     --point-empty-border: #ddd7c8;
-    --piece-black-bg: #383838;
-    --piece-black-border: #1a1a1a;
-    --piece-white-bg: #ffffff;
-    --piece-white-border: #cccccc;
-    --mill-line-bg: #8bc34a;
+    --piece-black-bg: #007bff;
+    --piece-black-border: #0056b3;
+    --piece-white-bg: #dc3545;
+    --piece-white-border: #b02a37;
+    --mill-line-bg: #ffc107; /* Gold for default theme */
     --message-color: #5c4033;
     --button-bg: #4CAF50;
 }
@@ -190,46 +229,45 @@ h1 {
     --bg-color: #333333;
     --container-bg: rgba(50, 50, 50, 0.9);
     --title-color: #f0f0f0;
-    --score-black-color: #f0f0f0;
-    --score-black-bg: #555555;
-    --score-white-color: #333333;
-    --score-white-bg: #cccccc;
+    --score-black-color: #ffffff;
+    --score-black-bg: #0056b3;
+    --score-white-color: #ffffff;
+    --score-white-bg: #b02a37;
     --point-empty-bg: #666666;
     --point-empty-border: #888888;
-    --piece-black-bg: #222222;
-    --piece-black-border: #444444;
-    --piece-white-bg: #dddddd;
-    --piece-white-border: #bbbbbb;
-    --mill-line-bg: #aed581;
+    --piece-black-bg: #0056b3;
+    --piece-black-border: #003380;
+    --piece-white-bg: #b02a37;
+    --piece-white-border: #861f28;
+    --mill-line-bg: #aed581; /* Light green for dark theme */
     --message-color: #f0f0f0;
     --button-bg: #689F38;
 }
 
+/* Apply theme variables */
 body {
     background-color: var(--bg-color);
+    transition: background-color 0.3s ease;
 }
 
 .container {
     background-color: var(--container-bg);
+    transition: background-color 0.3s ease;
 }
 
 h1 {
     color: var(--title-color);
+    transition: color 0.3s ease;
 }
 
-.black-score {
+.blue-score {
     color: var(--score-black-color);
     background-color: var(--score-black-bg);
 }
 
-.white-score {
+.red-score {
     color: var(--score-white-color);
     background-color: var(--score-white-bg);
-}
-
-.point::before {
-    background-color:  #c0b3a3; /* Keep hardcoded for the dot */
-    border-color:  #b0a597; /* Keep hardcoded for the dot */
 }
 
 .point.empty::before {
@@ -237,28 +275,29 @@ h1 {
     border-color: var(--point-empty-border);
 }
 
-.point.black::before {
+.point.blue::before {
     background-color: var(--piece-black-bg);
     border-color: var(--piece-black-border);
 }
 
-.point.white::before {
+.point.red::before {
     background-color: var(--piece-white-bg);
     border-color: var(--piece-white-border);
 }
 
 .mill-line {
     background-color: var(--mill-line-bg);
+    transition: background-color 0.3s ease;
 }
 
 .message {
     color: var(--message-color);
+    transition: color 0.3s ease;
 }
 
 #reset-button {
     background-color: var(--button-bg);
 }
-/* ... existing CSS ... */
 
 /* Theme toggle button */
 #theme-toggle {
@@ -270,8 +309,28 @@ h1 {
     font-size: 2em;
     cursor: pointer;
     outline: none;
+    transition: transform 0.3s ease-in-out, color 0.3s ease;
+    color: inherit; /* Inherit text color from the container */
 }
 
 #theme-toggle:hover {
     transform: scale(1.1);
+}
+
+.game-mode {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-mode label {
+    margin-left: 5px;
+}
+
+#ai-difficulty {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
 }
