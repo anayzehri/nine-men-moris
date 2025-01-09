@@ -456,22 +456,43 @@ function resetGame() {
     }
 }
 
-function makeNextAIMove() {
-    console.log(`makeNextAIMove() - placingPhase: ${placingPhase}, canRemovePiece: ${canRemovePiece}, currentPlayer: ${currentPlayer}`);
+function makeNextAIMove(gameState, aiStrategy) {
+    const { placingPhase, canRemovePiece, currentPlayer, gameMode, boardState } = gameState;
+
+    console.log(`makeNextAIMove() - placingPhase: ${placingPhase}, canRemovePiece: ${canRemovePiece}, currentPlayer: ${currentPlayer}, gameMode: ${gameMode}`);
 
     if (gameMode === 'ai' && currentPlayer === 'red') {
-       if (placingPhase) {
-          makeAIPlacePiece(boardState); // Pass boardState
+        if (placingPhase) {
+            aiStrategy.makeAIPlacePiece(boardState); // Using an AI strategy object
         } else if (canRemovePiece) {
-          setTimeout(makeAIRemovePiece, 250);
+            // Consider if the delay is really needed
+            setTimeout(() => aiStrategy.makeAIRemovePiece(boardState), 250);
+        } else {
+            aiStrategy.makeAIMove(boardState);
         }
-       else {
-          makeAIMove();
-       }
     } else {
         console.log(`makeNextAIMove - AI should not play. currentPlayer: ${currentPlayer}, gameMode: ${gameMode}`);
     }
 }
+
+// Example of how gameState might be structured
+const gameState = {
+    placingPhase: true,
+    canRemovePiece: false,
+    currentPlayer: 'red',
+    gameMode: 'ai',
+    boardState: /* ... your board state object ... */
+};
+
+// Example of an AI strategy object
+const basicAIStrategy = {
+    makeAIPlacePiece: function(board) { /* ... implementation ... */ },
+    makeAIRemovePiece: function(board) { /* ... implementation ... */ },
+    makeAIMove: function(board) { /* ... implementation ... */ }
+};
+
+// Calling the improved function
+makeNextAIMove(gameState, basicAIStrategy);
 
 
 // Evaluate the board state for the AI
