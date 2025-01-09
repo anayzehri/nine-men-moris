@@ -1,24 +1,99 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
+
 <head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Nine Men's Morris</title>
+
     <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 </head>
+
 <body>
+
     <div class="container">
+
         <h1>Nine Men's Morris</h1>
-        <button id="theme-toggle">🌙</button>
-        <div class="scores">
-            <div class="player-score current-turn">Black: <span id="black-score">9</span></div>
-            <div class="player-score">White: <span id="white-score">9</span></div>
+
+        <div class="theme-toggle-container">
+
+            <button id="theme-toggle">🌙</button>
+
+        <div class="score">
+
+    <div class="player-score blue-score current-turn">Blue: <span id="black-score">9</span></div>
+
+    <div class="player-score red-score">Red: <span id="white-score">9</span></div>
+
+</div>
+
+
+
+        <div class="game-mode">
+
+            <label>
+
+                <input type="radio" id="player-vs-player" name="game-mode" value="player" checked>
+
+                Player vs Player
+
+            </label>
+
+            <label>
+
+                <input type="radio" id="player-vs-ai" name="game-mode" value="ai">
+
+                Player vs AI
+
+            </label>
+
+            <select id="ai-difficulty">
+
+                <option value="easy">Easy</option>
+
+                <option value="medium" selected>Medium</option>
+
+                <option value="hard">Hard</option>
+
+            </select>
+
         </div>
+
+
+
         <div class="game-board">
-            <div class="points"></div>
+
+            <img id="board-img" src="board.png" alt="Nine Men's Morris Board">
+
+            <div class="points">
+
+                <!-- Points will be generated here by JavaScript -->
+
+            </div>
+
         </div>
-        <div class="message"></div>
+
+
+
+        <div class="message">Black's turn to place piece.</div>
+
+
+
         <button id="reset-button">Reset Game</button>
+
     </div>
-    <script src="script.js"></script>
-    <script src="ai.js"></script>
+
+    <script src="game.js"></script>
+
+    <script src="ai.js" type="module"></script>
+
 </body>
+
 </html>
