@@ -6,66 +6,91 @@ body {
     min-height: 100vh;
     background-color: var(--bg-color);
     margin: 0;
-    background-image: url('background-texture.jpg'); /* Optional background texture */
+    /* More sophisticated background */
+    background-image: radial-gradient(circle at top left, #f0e8d8, #d8d0c0); /* Soft gradient */
     background-size: cover;
-    background-blend-mode: overlay;
-    transition: background-color 0.3s ease;
+    background-blend-mode: overlay; /* Keep the blend mode */
+    transition: background-color 0.5s ease; /* Slightly smoother transition */
 }
 
 .container {
     background-color: var(--container-bg);
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    padding: 40px; /* Slightly more padding */
+    border-radius: 20px; /* More rounded corners */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25); /* Deeper shadow */
     text-align: center;
-    transition: background-color 0.3s ease;
-    position: relative; /* For theme toggle positioning */
+    transition: background-color 0.5s ease;
+    position: relative;
+    overflow: hidden; /* To contain potential pseudo-elements */
+}
+
+/* Subtle background pattern for the container (optional) */
+.container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('subtle-pattern.png'); /* Replace with your pattern */
+    opacity: 0.05;
+    pointer-events: none; /* Make it non-interactive */
 }
 
 h1 {
     color: var(--title-color);
-    margin-bottom: 20px;
-    font-size: 2.5em;
-    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1);
-    transition: color 0.3s ease;
+    margin-bottom: 25px;
+    font-size: 2.8em; /* Slightly larger title */
+    text-shadow: 2px 3px 4px rgba(0, 0, 0, 0.15); /* More pronounced shadow */
+    transition: color 0.5s ease;
+    letter-spacing: 1px; /* Improve readability */
 }
 
 .score {
     display: flex;
     justify-content: space-around;
-    margin-bottom: 25px;
-    font-size: 1.1em;
+    margin-bottom: 30px;
+    font-size: 1.2em;
 }
 
 .player-score {
     font-weight: bold;
-    padding: 10px 15px;
-    border-radius: 8px;
-    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out, background-color 0.3s ease, color 0.3s ease;
+    padding: 12px 20px; /* Slightly larger padding */
+    border-radius: 10px; /* More rounded */
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out, background-color 0.5s ease, color 0.5s ease;
 }
 
 .blue-score {
     color: var(--score-black-color);
     background-color: var(--score-black-bg);
+    box-shadow: 0 3px 8px rgba(0, 123, 255, 0.4); /* Subtle glow */
 }
 
 .red-score {
     color: var(--score-white-color);
     background-color: var(--score-white-bg);
+    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.4); /* Subtle glow */
 }
 
 .game-board {
     position: relative;
-    max-width: 500px;
-    width: 80vw;
+    max-width: 550px; /* Slightly larger board */
+    width: 85vw;
     aspect-ratio: 1 / 1;
-    margin: 0 auto 20px;
+    margin: 0 auto 25px;
+    /* Subtle border for definition */
+    border: 2px solid var(--board-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Clip any overflowing points */
 }
 
 #board-img {
     width: 100%;
     height: 100%;
     display: block;
+    /* Optional subtle blur for depth */
+    /* filter: blur(1px); */
 }
 
 .points {
@@ -78,8 +103,8 @@ h1 {
 
 .point {
     position: absolute;
-    width: 30px;
-    height: 30px;
+    width: 35px; /* Slightly larger interactive area */
+    height: 35px;
     border-radius: 50%;
     cursor: pointer;
     transform: translate(-50%, -50%);
@@ -87,22 +112,27 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: transform 0.2s ease-in-out; /* Smooth hover effect */
+}
+
+.point:hover {
+    transform: translate(-50%, -50%) scale(1.05); /* Gentle scaling on hover */
 }
 
 .point::before {
     content: "";
     display: block;
-    width: 18px;
-    height: 18px;
+    width: 20px; /* Slightly larger base point */
+    height: 20px;
     border-radius: 50%;
-    background-color: #c0b3a3;
-    border: 2px solid #b0a597;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease, border-color 0.2s ease;
+    background-color: var(--point-base-bg); /* New variable */
+    border: 2px solid var(--point-base-border); /* New variable */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .point:hover::before {
-    transform: scale(1.1);
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    transform: scale(1.15);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
 }
 
 .point.empty::before {
@@ -116,9 +146,9 @@ h1 {
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background-color: var(--piece-black-bg);
+    background-image: radial-gradient(circle at top left, var(--piece-black-light), var(--piece-black-bg)); /* Gradient for depth */
     border: 2px solid var(--piece-black-border);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6); /* More pronounced shadow */
 }
 
 .point.red::before {
@@ -127,137 +157,149 @@ h1 {
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background-color: var(--piece-white-bg);
+    background-image: radial-gradient(circle at top left, var(--piece-white-light), var(--piece-white-bg)); /* Gradient for depth */
     border: 2px solid var(--piece-white-border);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4); /* More pronounced shadow */
 }
 
-
-
 .point.highlight::before {
-    border: 3px solid yellow; /* Distinct border */
-    box-shadow: 0 0 10px yellow; /* Glow effect */
+    border: 3px solid #ffeb3b; /* Brighter yellow */
+    box-shadow: 0 0 12px #ffeb3b, 0 0 6px #ffeb3b inset; /* Double glow effect */
+    transform: scale(1.1); /* Slightly pop out */
 }
 
 .point.mill-highlight::before {
-    box-shadow: 0 0 10px 5px rgba(144, 238, 144, 0.8); /* Stronger green glow */
+    box-shadow: 0 0 15px 7px rgba(174, 213, 129, 0.9), 0 0 8px 4px rgba(174, 213, 129, 0.7) inset; /* Softer, layered green glow */
 }
 
 .mill-line {
     position: absolute;
-    height: 8px; /* Thicker */
-    background-color: #ffc107; /* Gold color */
-    border-radius: 4px;
+    height: 10px; /* Slightly thicker */
+    background-color: var(--mill-line-bg);
+    border-radius: 5px;
     z-index: 2;
-    box-shadow: 0 0 12px 6px rgba(255, 193, 7, 0.6); /* Stronger glow */
-    animation: millGlow 1s infinite alternate;
+    box-shadow: 0 0 15px 8px rgba(255, 235, 59, 0.7); /* Brighter gold glow */
+    animation: millGlow 1.2s infinite alternate; /* Slightly slower */
 }
 
 @keyframes millGlow {
-    from { opacity: 0.8; }
+    from { opacity: 0.7; }
     to { opacity: 1; }
 }
 
 .message {
-    font-size: 1.2em;
-    margin-bottom: 20px;
+    font-size: 1.3em;
+    margin-bottom: 25px;
     color: var(--message-color);
     font-weight: bold;
-    transition: color 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    transition: color 0.5s ease;
 }
 
 #reset-button {
-    padding: 12px 25px;
-    font-size: 1em;
+    padding: 14px 30px; /* Larger button */
+    font-size: 1.1em;
     background-color: var(--button-bg);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+    transition: background-color 0.3s ease, transform 0.2s ease-in-out, box-shadow 0.3s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
 }
 
 #reset-button:hover {
-    background-color: #43A047;
-    transform: scale(1.05);
+    background-color: #4CAF50;
+    transform: scale(1.08);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 .player-score.current-turn {
-    box-shadow: 0 0 15px 5px #ffdd57; /* Yellow glow */
-    animation: pulse 1.5s infinite ease-in-out;
+    box-shadow: 0 0 18px 7px #ffea00; /* Even brighter yellow glow */
+    animation: pulse 1.7s infinite ease-in-out; /* Slightly slower pulse */
 }
 
 @keyframes pulse {
     0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+    50% { transform: scale(1.06); }
     100% { transform: scale(1); }
 }
 
 .point.invalid-move::before {
-    background-color: #f44336; /* Red warning color */
-    animation: shake 0.5s;
+    background-color: #f44336;
+    animation: shake 0.6s; /* Slightly longer shake */
 }
 
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-    20%, 40%, 60%, 80% { transform: translateX(5px); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+    20%, 40%, 60%, 80% { transform: translateX(6px); }
 }
 
 :root {
-    /* Default theme variables */
-    --bg-color: #f0e8d8;
-    --container-bg: rgba(255, 255, 255, 0.9);
-    --title-color: #5c4033;
+    /* Default theme variables - Refined */
+    --bg-color: #f5f0e1; /* Lighter, warmer background */
+    --container-bg: rgba(255, 255, 255, 0.95); /* Slightly less transparency */
+    --title-color: #4e342e; /* Darker, more earthy brown */
     --score-black-color: #ffffff;
-    --score-black-bg: #007bff;
+    --score-black-bg: #1e88e5; /* More vibrant blue */
     --score-white-color: #ffffff;
-    --score-white-bg: #dc3545;
-    --point-empty-bg: #e8e2d3;
-    --point-empty-border: #ddd7c8;
-    --piece-black-bg: #007bff;
-    --piece-black-border: #0056b3;
-    --piece-white-bg: #dc3545;
-    --piece-white-border: #b02a37;
-    --mill-line-bg: #ffc107; /* Gold for default theme */
-    --message-color: #5c4033;
-    --button-bg: #4CAF50;
+    --score-white-bg: #e53935; /* More vibrant red */
+    --point-empty-bg: #e0e0e0; /* Light gray */
+    --point-empty-border: #bdbdbd; /* Medium gray */
+    --point-base-bg: #d8d0c0; /* New variable for base point color */
+    --point-base-border: #c0b3a3; /* New variable for base point border */
+    --piece-black-bg: #1976d2;
+    --piece-black-light: #64b5f6; /* Lighter shade for gradient */
+    --piece-black-border: #0d47a1;
+    --piece-white-bg: #d32f2f;
+    --piece-white-light: #ef5350; /* Lighter shade for gradient */
+    --piece-white-border: #9a0007;
+    --mill-line-bg: #ffc107; /* Gold */
+    --message-color: #5d4037; /* Slightly darker brown */
+    --button-bg: #43a047; /* Green */
+    --board-border: #a1887f; /* Earthy tone for board border */
 }
 
-/* Dark theme variables */
+/* Dark theme variables - Refined */
 .dark-theme {
-    --bg-color: #333333;
-    --container-bg: rgba(50, 50, 50, 0.9);
-    --title-color: #f0f0f0;
+    --bg-color: #263238; /* Darker blue-gray */
+    --container-bg: rgba(38, 50, 56, 0.95); /* Slightly less transparency */
+    --title-color: #eceff1; /* Off-white */
     --score-black-color: #ffffff;
-    --score-black-bg: #0056b3;
+    --score-black-bg: #0277bd; /* Slightly lighter dark blue */
     --score-white-color: #ffffff;
-    --score-white-bg: #b02a37;
-    --point-empty-bg: #666666;
-    --point-empty-border: #888888;
-    --piece-black-bg: #0056b3;
-    --piece-black-border: #003380;
-    --piece-white-bg: #b02a37;
-    --piece-white-border: #861f28;
-    --mill-line-bg: #aed581; /* Light green for dark theme */
-    --message-color: #f0f0f0;
-    --button-bg: #689F38;
+    --score-white-bg: #c62828; /* Slightly lighter dark red */
+    --point-empty-bg: #607d8b; /* Medium blue-gray */
+    --point-empty-border: #78909c; /* Slightly lighter blue-gray */
+    --point-base-bg: #455a64;
+    --point-base-border: #546e7a;
+    --piece-black-bg: #01579b;
+    --piece-black-light: #4f83cc;
+    --piece-black-border: #002f6c;
+    --piece-white-bg: #b71c1c;
+    --piece-white-light: #e57373;
+    --piece-white-border: #7f0000;
+    --mill-line-bg: #afb42b; /* Muted yellow-green */
+    --message-color: #cfd8dc; /* Light blue-gray */
+    --button-bg: #558b2f; /* Darker olive green */
+    --board-border: #607d8b;
 }
 
 /* Apply theme variables */
 body {
     background-color: var(--bg-color);
-    transition: background-color 0.3s ease;
+    transition: background-color 0.5s ease;
 }
 
 .container {
     background-color: var(--container-bg);
-    transition: background-color 0.3s ease;
+    transition: background-color 0.5s ease;
 }
 
 h1 {
     color: var(--title-color);
-    transition: color 0.3s ease;
+    transition: color 0.5s ease;
 }
 
 .blue-score {
@@ -273,6 +315,11 @@ h1 {
 .point.empty::before {
     background-color: var(--point-empty-bg);
     border-color: var(--point-empty-border);
+}
+
+.point::before {
+    background-color: var(--point-base-bg);
+    border-color: var(--point-base-border);
 }
 
 .point.blue::before {
@@ -287,38 +334,54 @@ h1 {
 
 .mill-line {
     background-color: var(--mill-line-bg);
-    transition: background-color 0.3s ease;
+    transition: background-color 0.5s ease;
 }
 
 .message {
     color: var(--message-color);
-    transition: color 0.3s ease;
+    transition: color 0.5s ease;
 }
 
 #reset-button {
     background-color: var(--button-bg);
 }
 
-/* Theme toggle button */
+.game-board {
+    border-color: var(--board-border);
+}
+
+/* Theme toggle button - More visual */
 #theme-toggle {
     position: absolute;
-    top: 10px;
-    right: 15px;
+    top: 15px;
+    right: 20px;
     background: none;
     border: none;
-    font-size: 2em;
+    font-size: 1.8em; /* Slightly smaller */
     cursor: pointer;
     outline: none;
-    transition: transform 0.3s ease-in-out, color 0.3s ease;
-    color: inherit; /* Inherit text color from the container */
+    transition: transform 0.3s ease-in-out, color 0.5s ease;
+    color: var(--title-color); /* Use title color for contrast */
+    opacity: 0.8;
 }
 
 #theme-toggle:hover {
-    transform: scale(1.1);
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+/* Consider using icons (like a sun and moon) for the toggle for better visual appeal */
+/* Example using text-based icons: */
+#theme-toggle.light-mode::before {
+    content: "☀️"; /* Sun icon */
+}
+
+#theme-toggle.dark-mode::before {
+    content: "🌙"; /* Moon icon */
 }
 
 .game-mode {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -326,11 +389,30 @@ h1 {
 
 .game-mode label {
     margin-left: 5px;
+    color: var(--message-color);
+    font-weight: bold;
+    margin-bottom: 5px; /* Space between label and select */
 }
 
 #ai-difficulty {
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    margin-top: 10px;
+    padding: 10px 15px;
+    font-size: 1em;
+    border-radius: 8px;
+    border: 2px solid var(--board-border); /* Consistent border */
+    background-color: var(--container-bg); /* Match container background */
+    color: var(--message-color);
+    appearance: none; /* Remove default styling */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23' + (getComputedStyle(document.documentElement).getPropertyValue('--message-color').replace('#', '')) + '" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position-x: calc(100% - 10px);
+    background-position-y: 50%;
+    transition: border-color 0.3s ease;
+}
+
+#ai-difficulty:focus {
+    outline: none;
+    border-color: var(--score-black-bg); /* Highlight on focus */
 }
