@@ -18,12 +18,12 @@
     --highlight-color: #FFD700; /* Soft gold for highlights */
     --mill-color: #90EE90; /* Light green, subtle confirmation */
     --transition-speed: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* More natural easing */
-    --border-radius: 12px; /* Slightly more rounded */
+    --border-radius: 14px; /* Slightly more rounded for touch */
     --font-family-header: 'Playfair Display', serif;
     --font-family-body: 'Merriweather', serif;
 }
 
-/*  Mobile-First Base Styles */
+/*  Mobile-First Base Styles - Enhanced for Touch */
 body {
     font-family: var(--font-family-body);
     background-color: var(--background-light);
@@ -31,14 +31,15 @@ body {
     margin: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Align items to the start for better mobile flow */
     min-height: 100vh;
     transition: background-color var(--transition-speed), color var(--transition-speed);
     background-image: url('data:image/svg+xml;utf8,<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><defs><style>.cls-1{fill:#e8e2d3;}</style></defs><rect class="cls-1" width="300" height="300"/></svg>'); /* Subtle paper-like texture */
     background-size: cover;
-    overflow-y: auto; /* Allow scrolling if needed */
-    padding: 20px; /* Add some padding around the edges */
-    box-sizing: border-box; /* Include padding in width and height */
+    overflow-y: auto;
+    padding: 15px; /* Slightly reduced padding */
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent; /* Remove default tap highlight */
 }
 
 body.dark-mode {
@@ -49,49 +50,49 @@ body.dark-mode {
 
 .container {
     background-color: var(--background-light);
-    padding: 30px; /* Adjust padding for mobile */
-    border-radius: 20px;
-    box-shadow: 0 8px 30px var(--shadow-light);
+    padding: 25px; /* Further reduced padding */
+    border-radius: 22px; /* Slightly more rounded */
+    box-shadow: 0 6px 25px var(--shadow-light); /* Reduced shadow intensity */
     text-align: center;
     transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
-    width: 100%; /* Take full width on mobile */
-    max-width: 600px; /* Limit width on larger screens */
+    width: 100%;
+    max-width: 550px; /* Further limit width on larger mobile screens */
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative; /* For potential absolute positioning of elements */
-    margin: auto; /* Center the container */
+    position: relative;
+    margin: 20px auto; /* Add top margin for better spacing */
 }
 
 body.dark-mode .container {
     background-color: var(--background-dark);
-    box-shadow: 0 8px 30px var(--shadow-dark);
+    box-shadow: 0 6px 25px var(--shadow-dark);
 }
 
-/* Header Styles - Grand and Elegant */
+/* Header Styles - Grand and Elegant, Scaled for Mobile */
 header {
-    margin-bottom: 20px; /* Adjust spacing for mobile */
+    margin-bottom: 15px; /* Reduced bottom margin */
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding-bottom: 10px;
+    padding-bottom: 8px; /* Reduced padding */
     border-bottom: 2px solid var(--secondary-color);
 }
 
 h1 {
     color: var(--primary-color);
     margin: 0;
-    font-size: 2.5em; /* Adjust font size for mobile */
+    font-size: 2.2em; /* Slightly smaller font size */
     font-family: var(--font-family-header);
-    text-shadow: 2px 2px 3px var(--shadow-light);
+    text-shadow: 1px 1px 2px var(--shadow-light); /* Reduced text shadow */
     transition: color var(--transition-speed);
-    letter-spacing: 1px;
+    letter-spacing: 0.5px; /* Reduced letter spacing */
 }
 
 body.dark-mode h1 {
     color: var(--secondary-color);
-    text-shadow: 2px 2px 3px var(--shadow-dark);
+    text-shadow: 1px 1px 2px var(--shadow-dark);
 }
 
 .theme-toggle-container {
@@ -101,12 +102,12 @@ body.dark-mode h1 {
 #theme-toggle {
     background: none;
     border: none;
-    font-size: 2em; /* Adjust size for mobile */
+    font-size: 1.8em; /* Slightly smaller toggle icon */
     cursor: pointer;
     color: var(--text-light);
-    transition: color var(--transition-speed), transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bouncy animation */
-    padding: 8px; /* Add some padding for touch target */
-    margin-left: 10px;
+    transition: color var(--transition-speed), transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    padding: 6px; /* Reduced padding */
+    margin-left: 5px; /* Reduced margin */
 }
 
 body.dark-mode #theme-toggle {
@@ -114,31 +115,31 @@ body.dark-mode #theme-toggle {
 }
 
 #theme-toggle:hover {
-    transform: rotate(15deg) scale(1.1);
+    transform: rotate(10deg) scale(1.05); /* Reduced hover effect */
 }
 
-/* Game Info Section - Clear and Informative */
+/* Game Info Section - Clear and Informative, Optimized for Mobile */
 .game-info {
     display: flex;
-    flex-direction: column; /* Stack elements on mobile */
+    flex-direction: column;
     align-items: center;
     width: 100%;
-    margin-bottom: 20px; /* Adjust spacing for mobile */
+    margin-bottom: 15px; /* Reduced bottom margin */
 }
 
-@media (min-width: 600px) {
+@media (min-width: 500px) {
     .game-info {
-        flex-direction: row; /* Display side-by-side on larger screens */
+        flex-direction: row;
         justify-content: space-between;
     }
 }
 
 .score {
     display: flex;
-    margin-bottom: 15px; /* Add space between scores on mobile */
+    margin-bottom: 10px; /* Reduced spacing */
 }
 
-@media (min-width: 600px) {
+@media (min-width: 500px) {
     .score {
         margin-bottom: 0;
     }
@@ -146,24 +147,24 @@ body.dark-mode #theme-toggle {
 
 .player-score {
     font-weight: bold;
-    padding: 10px 16px; /* Adjust padding for mobile */
+    padding: 8px 14px; /* Further reduced padding */
     border-radius: var(--border-radius);
-    margin: 0 8px;
+    margin: 0 6px; /* Reduced margin */
     background-color: #eee;
     color: var(--text-light);
-    box-shadow: 0 3px 8px var(--shadow-light);
-    transition: background-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed), transform 0.2s ease-in-out;
-    font-size: 0.9em; /* Adjust font size for mobile */
+    box-shadow: 0 2px 6px var(--shadow-light); /* Reduced shadow */
+    transition: background-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed), transform 0.15s ease-in-out; /* Faster transition */
+    font-size: 0.85em; /* Slightly smaller font size */
 }
 
 body.dark-mode .player-score {
     background-color: #444;
     color: var(--text-dark);
-    box-shadow: 0 3px 8px var(--shadow-dark);
+    box-shadow: 0 2px 6px var(--shadow-dark);
 }
 
 .player-score:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px); /* Reduced hover lift */
 }
 
 .blue-score {
@@ -177,22 +178,23 @@ body.dark-mode .player-score {
 }
 
 .player-score.current-turn {
-    animation: pulse 1.7s infinite cubic-bezier(0.4, 0, 0.6, 1);
-    box-shadow: 0 0 15px var(--highlight-color);
+    animation: pulse 1.5s infinite cubic-bezier(0.4, 0, 0.6, 1); /* Slightly faster pulse */
+    box-shadow: 0 0 10px var(--highlight-color); /* Reduced glow */
 }
 
 @keyframes pulse {
     0% { transform: scale(1); }
-    50% { transform: scale(1.08); }
+    50% { transform: scale(1.05); } /* Reduced scale */
     100% { transform: scale(1); }
 }
 
 .game-mode fieldset {
     border: 2px solid var(--accent-color);
     border-radius: var(--border-radius);
-    padding: 15px; /* Adjust padding for mobile */
-    margin-top: 10px; /* Add some space above on mobile */
+    padding: 12px; /* Reduced padding */
+    margin-top: 8px; /* Reduced top margin */
     transition: border-color var(--transition-speed);
+    font-size: 0.9em; /* Slightly smaller font size */
 }
 
 body.dark-mode .game-mode fieldset {
@@ -202,8 +204,8 @@ body.dark-mode .game-mode fieldset {
 .game-mode legend {
     font-weight: bold;
     color: var(--accent-color);
-    padding: 0 12px;
-    font-size: 1em; /* Adjust font size for mobile */
+    padding: 0 10px;
+    font-size: 0.95em; /* Slightly smaller font size */
     transition: color var(--transition-speed);
 }
 
@@ -212,28 +214,28 @@ body.dark-mode .game-mode legend {
 }
 
 .game-mode label {
-    margin: 0 10px;
-    font-size: 0.9em; /* Adjust font size for mobile */
+    margin: 0 8px; /* Reduced margin */
+    font-size: 0.85em; /* Slightly smaller font size */
 }
 
 #ai-difficulty {
-    padding: 8px 16px; /* Adjust padding for mobile */
+    padding: 6px 12px; /* Further reduced padding */
     border-radius: var(--border-radius);
     border: 1px solid #aaa;
     background-color: var(--background-light);
     color: var(--text-light);
-    font-size: 0.9em; /* Adjust font size for mobile */
-    appearance: none; /* Remove default styling */
+    font-size: 0.85em; /* Slightly smaller font size */
+    appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
-    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed), box-shadow 0.2s ease-in-out;
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed), box-shadow 0.15s ease-in-out; /* Faster transition */
 }
 
 #ai-difficulty:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 5px rgba(139, 69, 19, 0.5); /* Using RGB of primary color */
+    box-shadow: 0 0 4px rgba(139, 69, 19, 0.5);
 }
 
 body.dark-mode #ai-difficulty {
@@ -242,7 +244,7 @@ body.dark-mode #ai-difficulty {
     border-color: #777;
 }
 
-/* Game Area - The Heart of the Design */
+/* Game Area - The Heart of the Design, Mobile Optimized */
 .game-area {
     display: flex;
     flex-direction: column;
@@ -252,20 +254,20 @@ body.dark-mode #ai-difficulty {
 
 .game-board {
     position: relative;
-    width: 90vw; /* Take up most of the viewport width on mobile */
-    max-width: 500px; /* Limit size on larger screens */
-    height: 90vw; /* Make it square */
-    max-height: 500px;
-    margin-bottom: 20px; /* Adjust spacing for mobile */
-    box-shadow: 0 5px 15px var(--shadow-light);
-    border-radius: 10px;
-    overflow: hidden; /* Clip any overflowing elements */
+    width: 95vw; /* Take up more viewport width */
+    max-width: 450px; /* Further reduced max width */
+    height: 95vw;
+    max-height: 450px;
+    margin-bottom: 15px; /* Reduced bottom margin */
+    box-shadow: 0 4px 12px var(--shadow-light); /* Reduced shadow */
+    border-radius: 12px; /* Slightly more rounded */
+    overflow: hidden;
     transition: box-shadow var(--transition-speed);
-    user-select: none; /* Prevent text selection on tap and drag */
+    user-select: none;
 }
 
 body.dark-mode .game-board {
-    box-shadow: 0 5px 15px var(--shadow-dark);
+    box-shadow: 0 4px 12px var(--shadow-dark);
 }
 
 #board-img {
@@ -284,7 +286,7 @@ body.dark-mode .game-board {
 
 .point {
     position: absolute;
-    width: calc(100% / 8); /* Adjust based on board layout */
+    width: calc(100% / 8);
     height: calc(100% / 8);
     border-radius: 50%;
     cursor: pointer;
@@ -293,27 +295,27 @@ body.dark-mode .game-board {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1; /* Ensure points are below pieces */
+    z-index: 1;
     transition: transform 0.1s ease-in-out;
 }
 
 .point:hover {
-    transform: translate(-50%, -50%) scale(1.05);
+    transform: translate(-50%, -50%) scale(1.03); /* Reduced hover scale */
 }
 
 .point::before {
     content: "";
     display: block;
-    width: 20%; /* Adjust size relative to point container */
-    height: 20%;
+    width: 22%; /* Slightly larger base point */
+    height: 22%;
     border-radius: 50%;
     background-color: var(--point-color);
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease-in-out, background-color 0.2s ease; /* Springy hover */
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease-in-out, background-color 0.15s ease; /* Faster transitions */
 }
 
 .point:hover::before {
-    transform: scale(1.2);
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3); /* Reduced shadow */
 }
 
 .point.empty::before {
@@ -324,80 +326,78 @@ body.dark-mode .game-board {
 .point.red::before {
     content: "";
     display: block;
-    width: 60%; /* More substantial piece size */
-    height: 60%;
+    width: 55%; /* Slightly smaller piece size */
+    height: 55%;
     border-radius: 50%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
-    z-index: 2; /* Ensure pieces are above points */
-    animation: piece-drop 0.3s ease-out; /* Elegant drop animation */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); /* Reduced shadow */
+    z-index: 2;
+    animation: piece-drop 0.25s ease-out; /* Slightly faster drop */
 }
 
 .point.blue::before {
     background-color: var(--piece-blue);
-    /* Inner shadow for depth */
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 2px 5px rgba(0, 0, 0, 0.6);
-    animation-delay: 0.1s; /* Stagger animation for better visual */
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 4px rgba(0, 0, 0, 0.5); /* Reduced shadow */
+    animation-delay: 0.05s; /* Faster stagger */
 }
 
 .point.red::before {
     background-color: var(--piece-red);
-    /* Inner shadow for depth */
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 2px 5px rgba(0, 0, 0, 0.6);
-    animation-delay: 0.1s;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 4px rgba(0, 0, 0, 0.5); /* Reduced shadow */
+    animation-delay: 0.05s;
 }
 
 @keyframes piece-drop {
-    0% { transform: translateY(-50%); opacity: 0; }
+    0% { transform: translateY(-40%); opacity: 0; }
     100% { transform: translateY(0); opacity: 1; }
 }
 
 .point.highlight::before {
-    box-shadow: 0 0 12px var(--highlight-color);
-    transform: scale(1.3);
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 0 8px var(--highlight-color); /* Reduced glow */
+    transform: scale(1.2); /* Reduced scale */
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out; /* Faster transition */
 }
 
 .point.mill-highlight::before {
-    box-shadow: 0 0 12px 6px rgba(144, 238, 144, 0.8); /* Soft green glow */
+    box-shadow: 0 0 8px 4px rgba(144, 238, 144, 0.7); /* Reduced glow */
 }
 
 .mill-line {
     position: absolute;
-    height: 6px; /* More prominent line */
+    height: 5px; /* Slightly thinner line */
     background-color: var(--mill-color);
-    border-radius: 3px;
+    border-radius: 2.5px;
     z-index: 2;
-    box-shadow: 0 0 8px 4px rgba(144, 238, 144, 0.6); /* Soft green glow */
-    animation: mill-flash 1s ease-in-out infinite alternate; /* Subtle flash animation */
+    box-shadow: 0 0 6px 3px rgba(144, 238, 144, 0.5); /* Reduced glow */
+    animation: mill-flash 1.2s ease-in-out infinite alternate; /* Slightly slower flash */
 }
 
 @keyframes mill-flash {
-    from { opacity: 0.6; }
-    to { opacity: 1; }
+    from { opacity: 0.5; }
+    to { opacity: 0.9; }
 }
 
 /* Highlight Last Moved Piece - Subtle and Clear */
 .point.last-moved::before {
-    outline: 3px solid var(--secondary-color); /* Gentle outline */
-    transition: outline-color 0.2s ease-in-out;
+    outline: 2px solid var(--secondary-color); /* Thinner outline */
+    transition: outline-color 0.15s ease-in-out; /* Faster transition */
 }
 
-/* Game Controls - Stylish and Functional */
+/* Game Controls - Stylish and Functional, Mobile Friendly */
 .game-controls {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    margin-top: 20px; /* Add space above controls */
+    margin-top: 15px; /* Reduced top margin */
 }
 
 .message {
-    font-size: 1.2em; /* Adjust font size for mobile */
-    margin-bottom: 20px; /* Adjust spacing for mobile */
+    font-size: 1.1em; /* Slightly smaller font size */
+    margin-bottom: 15px; /* Reduced bottom margin */
     color: var(--accent-color);
     font-weight: bold;
-    transition: color var(--transition-speed), transform 0.2s ease-in-out;
-    animation-duration: 0.7s;
+    transition: color var(--transition-speed), transform 0.15s ease-in-out; /* Faster transition */
+    animation-duration: 0.6s; /* Slightly faster animation */
     animation-timing-function: ease-out;
 }
 
@@ -412,7 +412,7 @@ body.dark-mode .message {
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(15px);
+        transform: translateY(10px); /* Reduced distance */
     }
     to {
         opacity: 1;
@@ -421,40 +421,40 @@ body.dark-mode .message {
 }
 
 #reset-button {
-    padding: 12px 24px; /* Adjust padding for mobile */
-    font-size: 1.1em; /* Adjust font size for mobile */
+    padding: 10px 20px; /* Further reduced padding */
+    font-size: 1em; /* Slightly smaller font size */
     background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
-    transition: background-color var(--transition-speed), transform 0.2s cubic-bezier(0.4, 0.0, 0.2, 1), box-shadow var(--transition-speed); /* More dynamic ease */
-    box-shadow: 0 4px 10px var(--shadow-light);
+    transition: background-color var(--transition-speed), transform 0.15s cubic-bezier(0.4, 0.0, 0.2, 1), box-shadow var(--transition-speed); /* Faster transition */
+    box-shadow: 0 3px 8px var(--shadow-light); /* Reduced shadow */
     font-weight: bold;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px; /* Reduced letter spacing */
 }
 
 body.dark-mode #reset-button {
     background-color: var(--secondary-color);
     color: var(--text-light);
-    box-shadow: 0 4px 10px var(--shadow-dark);
+    box-shadow: 0 3px 8px var(--shadow-dark);
 }
 
 #reset-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 12px var(--shadow-light);
+    transform: scale(1.03); /* Reduced scale */
+    box-shadow: 0 5px 10px var(--shadow-light); /* Reduced shadow */
 }
 
 #reset-button:active {
-    transform: scale(0.98);
-    box-shadow: 0 3px 8px var(--shadow-light);
+    transform: scale(0.99);
+    box-shadow: 0 2px 6px var(--shadow-light); /* Reduced shadow */
 }
 
-/* Footer Styles - Understated Elegance */
+/* Footer Styles - Understated Elegance, Mobile Scaled */
 footer {
-    margin-top: 30px; /* Adjust spacing for mobile */
-    padding: 15px 0; /* Adjust padding for mobile */
-    font-size: 0.9em; /* Adjust font size for mobile */
+    margin-top: 20px; /* Reduced top margin */
+    padding: 12px 0; /* Reduced padding */
+    font-size: 0.85em; /* Smaller font size */
     color: #999;
     border-top: 1px solid #ddd;
     transition: border-color var(--transition-speed), color var(--transition-speed);
@@ -472,14 +472,14 @@ footer p {
 
 footer i {
     color: var(--accent-color);
-    animation: heartBeat 1.5s infinite; /* Add a subtle heartbeat animation */
+    animation: heartBeat 2s infinite; /* Slightly slower heartbeat */
 }
 
 @keyframes heartBeat {
     0% { transform: scale(1); }
-    14% { transform: scale(1.1); }
+    14% { transform: scale(1.05); } /* Reduced scale */
     28% { transform: scale(1); }
-    42% { transform: scale(1.1); }
+    42% { transform: scale(1.05); }
     70% { transform: scale(1); }
 }
 
@@ -494,91 +494,97 @@ footer i {
     overflow: hidden;
 }
 
-/*  Media Query for Larger Screens */
-@media (min-width: 768px) {
+/*  Media Query for Larger Screens - Adjusted Breakpoint */
+@media (min-width: 600px) {
     .container {
-        padding: 50px;
+        padding: 40px;
+        margin: 40px auto;
     }
 
     h1 {
-        font-size: 3em;
+        font-size: 2.5em;
+        letter-spacing: 1px;
     }
 
     .game-info {
-        margin-bottom: 40px;
-    }
-
-    .game-board {
-        width: 550px;
-        height: 550px;
         margin-bottom: 30px;
     }
 
+    .game-board {
+        width: 500px;
+        height: 500px;
+        margin-bottom: 20px;
+        border-radius: 14px;
+    }
+
     .player-score {
-        padding: 12px 20px;
-        font-size: 1em;
-        margin: 0 10px;
+        padding: 10px 18px;
+        font-size: 0.9em;
+        margin: 0 8px;
     }
 
     .game-mode fieldset {
-        padding: 20px;
+        padding: 15px;
+        font-size: 0.95em;
     }
 
     .game-mode legend {
-        font-size: 1.1em;
-    }
-
-    .game-mode label {
-        margin: 0 15px;
-    }
-
-    #ai-difficulty {
-        padding: 10px 20px;
         font-size: 1em;
     }
 
+    .game-mode label {
+        margin: 0 12px;
+        font-size: 0.9em;
+    }
+
+    #ai-difficulty {
+        padding: 8px 16px;
+        font-size: 0.9em;
+    }
+
     .message {
-        font-size: 1.3em;
-        margin-bottom: 25px;
+        font-size: 1.2em;
+        margin-bottom: 20px;
     }
 
     #reset-button {
-        padding: 14px 30px;
-        font-size: 1.2em;
+        padding: 12px 24px;
+        font-size: 1.1em;
+        letter-spacing: 0.5px;
     }
 
     footer {
-        padding: 20px 0;
-        font-size: 0.95em;
+        padding: 15px 0;
+        font-size: 0.9em;
     }
 }
 
-/* Animations and Transitions Enhancement */
+/* Animations and Transitions Enhancement - Optimized for Mobile */
 
 /*  Smooth Piece Movement (consider adding JavaScript for actual movement) */
 .point.moving-piece::before {
-    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), top 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), left 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.2s ease-in-out;
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55), top 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55), left 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.15s ease-in-out; /* Faster transition */
 }
 
 /* Subtle Hover Effect on Points */
 .point:not(.empty):hover::before {
-    transform: scale(1.1);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4); /* Reduced shadow */
 }
 
-/*  Visual Feedback for Valid Moves (Example - you might need JS to add this class) */
+/*  Visual Feedback for Valid Moves */
 .point.valid-move::before {
-    border: 3px dashed var(--highlight-color);
-    transition: border-color 0.3s ease-in-out;
+    border: 2px dashed var(--highlight-color); /* Thinner border */
+    transition: border-color 0.25s ease-in-out; /* Faster transition */
 }
 
 /*  Animation for Mill Formation */
 .mill-formed .point::before {
-    animation: mill-indicator 1s ease-out forwards;
+    animation: mill-indicator 0.8s ease-out forwards; /* Faster animation */
 }
 
 @keyframes mill-indicator {
-    0% { transform: scale(1); box-shadow: 0 0 12px var(--highlight-color); }
-    50% { transform: scale(1.2); box-shadow: 0 0 20px var(--highlight-color); }
-    100% { transform: scale(1); box-shadow: 0 0 12px var(--highlight-color); }
-        }
+    0% { transform: scale(1); box-shadow: 0 0 8px var(--highlight-color); } /* Reduced glow */
+    50% { transform: scale(1.1); box-shadow: 0 0 15px var(--highlight-color); } /* Reduced glow and scale */
+    100% { transform: scale(1); box-shadow: 0 0 8px var(--highlight-color); }
+}
