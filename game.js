@@ -44,22 +44,37 @@ const neighbors = {
     22: [19, 21, 23],
     23: [14, 22]
 };
-const themeToggle = document.getElementById('theme-toggle');
-const container = document.querySelector('.container');
-const localTheme = localStorage.getItem('theme');
+/* game.js */
+// Keep your existing game logic here.
+// Only adding the theme toggle functionality here for demonstration.
 
-if (localTheme === 'dark') {
-    container.classList.add('dark-theme');
-    themeToggle.innerHTML = '☀️';
-} else {
-    themeToggle.innerHTML = '🌙';
-}
+const themeToggle = document.getElementById('theme-toggle');
+const body = document.body;
+
+const applyTheme = (theme) => {
+    if (theme === 'dark') {
+        body.classList.add('dark-mode');
+        themeToggle.innerHTML = '☀️';
+    } else {
+        body.classList.remove('dark-mode');
+        themeToggle.innerHTML = '🌙';
+    }
+};
+
+const savedTheme = localStorage.getItem('theme') || 'light';
+applyTheme(savedTheme);
 
 themeToggle.addEventListener('click', () => {
-    container.classList.toggle('dark-theme');
-    localStorage.setItem('theme', container.classList.contains('dark-theme') ? 'dark' : 'light');
-    themeToggle.innerHTML = container.classList.contains('dark-theme') ? '☀️' : '🌙';
+    if (body.classList.contains('dark-mode')) {
+        applyTheme('light');
+        localStorage.setItem('theme', 'light');
+    } else {
+        applyTheme('dark');
+        localStorage.setItem('theme', 'dark');
+    }
 });
+
+// ... rest of your game.js code ...
 
 const gameBoard = document.querySelector('.game-board');
 const pointsContainer = document.querySelector('.points');
@@ -79,7 +94,7 @@ let placingPhase = true;
 let selectedPieceIndex = null;
 let canRemovePiece = false;
 let gameMode = 'player';
-let aiDifficulty = 'medium';
+let aiDifficulty = 'hard'; // Default to hard for the "perfect" AI
 let placedPiecesCount = 0;
 
 aiDifficultySelect.addEventListener('change', () => {
@@ -456,46 +471,22 @@ function resetGame() {
     }
 }
 
-function makeNextAIMove(gameState, aiStrategy) {
-    const { placingPhase, canRemovePiece, currentPlayer, gameMode, boardState } = gameState;
-
-    console.log(`makeNextAIMove() - placingPhase: ${placingPhase}, canRemovePiece: ${canRemovePiece}, currentPlayer: ${currentPlayer}, gameMode: ${gameMode}`);
+function makeNextAIMove() {
+    console.log(`makeNextAIMove() - placingPhase: ${placingPhase}, canRemovePiece: ${canRemovePiece}, currentPlayer: ${currentPlayer}`);
 
     if (gameMode === 'ai' && currentPlayer === 'red') {
         if (placingPhase) {
-            aiStrategy.makeAIPlacePiece(boardState); // Using an AI strategy object
+            makeAIPlacePiece(boardState);
         } else if (canRemovePiece) {
-            // Consider if the delay is really needed
-            setTimeout(() => aiStrategy.makeAIRemovePiece(boardState), 250);
+            setTimeout(makeAIRemovePiece, 250);
         } else {
-            aiStrategy.makeAIMove(boardState);
+            makeAIMove();
         }
     } else {
         console.log(`makeNextAIMove - AI should not play. currentPlayer: ${currentPlayer}, gameMode: ${gameMode}`);
     }
 }
 
-// Example of how gameState might be structured
-const gameState = {
-    placingPhase: true,
-    canRemovePiece: false,
-    currentPlayer: 'red',
-    gameMode: 'ai',
-    boardState: /* ... your board state object ... */
-};
-
-// Example of an AI strategy object
-const basicAIStrategy = {
-    makeAIPlacePiece: function(board) { /* ... implementation ... */ },
-    makeAIRemovePiece: function(board) { /* ... implementation ... */ },
-    makeAIMove: function(board) { /* ... implementation ... */ }
-};
-
-// Calling the improved function
-makeNextAIMove(gameState, basicAIStrategy);
-
-
-// Evaluate the board state for the AI
 function evaluateBoard(board) {
     let score = 0;
 
@@ -506,31 +497,55 @@ function evaluateBoard(board) {
         const blueCount = positions.filter(p => p === 'blue').length;
 
         if (redCount === 2 && positions.includes(null)) {
-            score += 50; // Potential mill for AI
+            score += 150; // Potential mill for AI
         } else if (redCount === 3) {
-            score += 500; // AI has a mill
+            score += 700; // AI has a mill
         }
 
         if (blueCount === 2 && positions.includes(null)) {
-            score -= 30; // Potential mill for opponent
+            score -= 100; // Potential mill for opponent
         } else if (blueCount === 3) {
-            score -= 300; // Opponent has a mill
+            score -= 500; // Opponent has a mill
         }
     }
 
-    // Consider piece count
+    // Consider piece count, more important in late-game
     const redPieces = board.filter(p => p === 'red').length;
     const bluePieces = board.filter(p => p === 'blue').length;
-    score += (redPieces - bluePieces) * 10;
+    score += (redPieces - bluePieces) * 20; // Slightly increase in importance
 
     // Consider mobility (number of legal moves)
     const redMoves = getAllPossibleMoves(board, 'red').length;
     const blueMoves = getAllPossibleMoves(board, 'blue').length;
-    score += (redMoves - blueMoves) * 5;
+    score += (redMoves - blueMoves) * 5; // Slightly reduce in importance compared to mill count.
+
+    // Activity and position of pieces
+    const strategicPositions = [4, 10, 13, 16, 19]; // Example central positions
+    for (let i = 0; i < board.length; i++) {
+        if (board[i] === 'red') {
+             if (strategicPositions.includes(i)) {
+                 score += 10;
+            }
+            for (const neighbor of neighbors[i]) {
+                 if (board[neighbor] === null) {
+                    score+= 2;
+                }
+            }
+        } else if (board[i] === 'blue') {
+             if (strategicPositions.includes(i)) {
+                 score -= 10;
+            }
+             for (const neighbor of neighbors[i]) {
+                 if (board[neighbor] === null) {
+                    score-= 2;
+                }
+            }
+        }
+    }
+
 
     return score;
 }
-
 function getAllPossibleMoves(board, player) {
     const possibleMoves = [];
     const playerPieces = board.reduce((acc, piece, index) => {
@@ -550,60 +565,26 @@ function getAllPossibleMoves(board, player) {
     return possibleMoves;
 }
 
-
-
-
-
-function getEmptyPoints(board) {
-    const empty = [];
-    for (let i = 0; i < board.length; i++) {
-        if (board[i] === null) {
-            empty.push(i);
+function makeAIPlacePiece(board) {
+    console.log(`makeAIPlacePiece() - currentPlayer: ${currentPlayer}`);
+    const emptyPoints = board.reduce((acc, piece, index) => {
+        if (piece === null) {
+            acc.push(index);
         }
-    }
-    return empty;
-}
-
-const aiPlacementStrategies = {
-    'easy': (board) => {
-        const emptyPoints = getEmptyPoints(board);
-        return emptyPoints[Math.floor(Math.random() * emptyPoints.length)];
-    },
-    'medium': (board) => {
-        const emptyPoints = getEmptyPoints(board);
-        let bestScoreMedium = -Infinity;
-        let bestMove;
-        for (const point of emptyPoints) {
-            const tempBoardState = [...board];
-            tempBoardState[point] = 'red'; // Assuming AI is 'red'
-            const score = evaluateBoard(tempBoardState);
-            if (score > bestScoreMedium) {
-                bestScoreMedium = score;
-                bestMove = point;
-            }
-        }
-        return bestMove;
-    },
-    'hard': (board) => findBestPlaceMove(board, 4)
-};
-
-function makeAIPlacePiece(board, currentPlayer, aiDifficulty) {
-    console.log(`makeAIPlacePiece() - currentPlayer: ${currentPlayer}, difficulty: ${aiDifficulty}`);
-
-    const emptyPoints = getEmptyPoints(board);
+        return acc;
+    }, []);
 
     if (emptyPoints.length > 0) {
-        const bestMove = aiPlacementStrategies[aiDifficulty](board);
+        let bestMove;
+        bestMove = findBestPlaceMove(board, 4);
 
         if (bestMove !== undefined && board[bestMove] === null) {
             console.log(`AI Placing piece at ${bestMove}`);
             handlePlacement(bestMove);
         } else {
             console.error("AI attempted an illegal placement or no valid move found.");
-            // Fallback
-            const emptyPointsFallback = getEmptyPoints(board);
-            if (emptyPointsFallback.length > 0) {
-                const randomMove = emptyPointsFallback[Math.floor(Math.random() * emptyPointsFallback.length)];
+            if (emptyPoints.length > 0) {
+                const randomMove = emptyPoints[Math.floor(Math.random() * emptyPoints.length)];
                 console.log(`AI Placing piece at random ${randomMove}`);
                 handlePlacement(randomMove);
             } else {
@@ -614,102 +595,79 @@ function makeAIPlacePiece(board, currentPlayer, aiDifficulty) {
         console.error("No empty points available for AI placement, this should not happen.");
     }
 }
+
 function makeAIMove() {
     console.log(`makeAIMove() - currentPlayer: ${currentPlayer}`);
-    const aiPiecesIndices = boardState.reduce((acc, piece, index) => {
-        if (piece === 'red') {
-            acc.push(index);
-        }
-        return acc;
-    }, []);
-
-    if (aiPiecesIndices.length === 0) {
-        console.log("makeAIMove - No AI pieces to move.");
-        return;
-    }
-
     let bestMove = null;
     let bestTarget = null;
     let bestScore = -Infinity;
 
-    const isFlying = aiPiecesIndices.length === 3;
-     console.log(`makeAIMove - isFlying: ${isFlying}`);
+    const possibleMoves = getAllPossibleBoardStates(boardState, 'red');
 
-    for (const pieceIndex of aiPiecesIndices) {
-        const possibleMoves = isFlying
-            ? boardState.reduce((acc, piece, index) => piece === null ? [...acc, index] : acc, [])
-            : neighbors[pieceIndex];
-      console.log(`makeAIMove - Piece at ${pieceIndex} has possible moves:`, possibleMoves);
-
-        for (const targetIndex of possibleMoves) {
-            if (boardState[targetIndex] === null) {
-                 console.log(`makeAIMove - Trying Move: ${pieceIndex} to ${targetIndex}`);
-                const tempBoardState = [...boardState];
-                tempBoardState[targetIndex] = 'red';
-                tempBoardState[pieceIndex] = null;
-                let score;
-                if (aiDifficulty === 'hard') {
-                     score = minimax(tempBoardState, 4, -Infinity, Infinity, false);
-                     console.log(`makeAIMove - Hard Mode Score of ${pieceIndex} to ${targetIndex} is ${score}`);
-                } else {
-                   score = evaluateBoard(tempBoardState); // Pass the temporary board state
-                     console.log(`makeAIMove - Score of ${pieceIndex} to ${targetIndex} is ${score}`);
-                }
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = pieceIndex;
-                    bestTarget = targetIndex;
-                     console.log(`makeAIMove - New Best Move: ${bestMove} to ${bestTarget} with score ${bestScore}`);
-                }
+    for (const nextBoard of possibleMoves) {
+        const score = minimax(nextBoard, 3, -Infinity, Infinity, false);
+        console.log("Evaluating board:", nextBoard, "Score:", score);
+        if (score > bestScore) {
+            bestScore = score;
+            // Determine the move that led to this board state
+            const diff = findMoveDifference(boardState, nextBoard);
+            if (diff) {
+                bestMove = diff.from;
+                bestTarget = diff.to;
             }
         }
     }
-      console.log(`makeAIMove - Best Move: ${bestMove} to ${bestTarget} with score ${bestScore}`);
-    if (bestMove !== null && bestTarget !== null) {
 
-        if (boardState[bestMove] === 'red' && boardState[bestTarget] === null) {
-            const canMove = isFlying || neighbors[bestMove].includes(parseInt(bestTarget));
-            if (canMove) {
-                 console.log(`makeAIMove - Applying Move: ${bestMove} to ${bestTarget}`);
-                boardState[bestTarget] = 'red';
-                boardState[bestMove] = null;
-                updateBoardDisplay();
-                 removeHighlights();
-                  removeMillLines();
-                 removeMillHighlight();
+     if (bestMove !== null && bestTarget !== null) {
+        const isFlying = boardState.filter(p => p === 'red').length === 3;
+         const canMove = isFlying || neighbors[bestMove].includes(parseInt(bestTarget));
+        if (boardState[bestMove] === 'red' && boardState[bestTarget] === null && canMove) {
+            console.log(`makeAIMove - Applying Move: ${bestMove} to ${bestTarget}`);
+            boardState[bestTarget] = 'red';
+            boardState[bestMove] = null;
+            updateBoardDisplay();
+            removeHighlights();
+            removeMillLines();
+            removeMillHighlight();
 
-                  const formedMill = checkMill(bestTarget, 'red');
-                if (formedMill) {
-                    canRemovePiece = true;
-                    updateMessage("Mill formed! " + currentPlayer.toUpperCase() + ", remove an opponent's piece.");
-                    drawMillLine(formedMill);
-                    highlightMillPieces(formedMill);
-                    if (gameMode === 'ai') {
-                        setTimeout(makeAIRemovePiece, 250);
-                    }
-                } else {
-                     switchTurn();
-                    if (!placingPhase) {
-                      checkWinCondition();
-                   }
-               }
+            const formedMill = checkMill(bestTarget, 'red');
+            if (formedMill) {
+                canRemovePiece = true;
+                updateMessage("Mill formed! " + currentPlayer.toUpperCase() + ", remove an opponent's piece.");
+                drawMillLine(formedMill);
+                highlightMillPieces(formedMill);
+                if (gameMode === 'ai') {
+                    setTimeout(makeAIRemovePiece, 250);
+                }
             } else {
-                console.error(`makeAIMove - AI attempted an illegal move (not a neighbor) from ${bestMove} to ${bestTarget}.`);
-                // Fallback: Make a random legal move
-                makeRandomLegalMove();
+                switchTurn();
+                if (!placingPhase) {
+                    checkWinCondition();
+                }
             }
         } else {
             console.error(`makeAIMove - AI attempted an illegal move (source or target invalid) from ${bestMove} to ${bestTarget}.`);
-            // Fallback: Make a random legal move
-           makeRandomLegalMove();
+            makeRandomLegalMove();
         }
     } else {
         console.error("makeAIMove - AI could not find a valid move.");
-        // Fallback: If no best move is found, try making a random legal move
         makeRandomLegalMove();
     }
 }
+function findMoveDifference(boardBefore, boardAfter) {
+    let from = null;
+    let to = null;
+    const redPiecesBefore = boardBefore.reduce((acc, piece, index) => piece === 'red' ? [...acc, index] : acc, []);
+    const redPiecesAfter = boardAfter.reduce((acc, piece, index) => piece === 'red' ? [...acc, index] : acc, []);
 
+    const movedFrom = redPiecesBefore.filter(index => !redPiecesAfter.includes(index));
+    const movedTo = redPiecesAfter.filter(index => !redPiecesBefore.includes(index));
+
+    if (movedFrom.length === 1 && movedTo.length === 1) {
+        return { from: movedFrom[0], to: movedTo[0] };
+    }
+    return null;
+}
 
 function makeRandomLegalMove() {
     const aiPiecesIndices = boardState.reduce((acc, piece, index) => {
@@ -739,18 +697,18 @@ function makeRandomLegalMove() {
         const bestMove = randomMove[0];
         const bestTarget = randomMove[1];
 
-          if (boardState[bestMove] === 'red' && boardState[bestTarget] === null) {
+        if (boardState[bestMove] === 'red' && boardState[bestTarget] === null) {
             const canMove = isFlying || neighbors[bestMove].includes(parseInt(bestTarget));
             if (canMove) {
-                 console.log(`makeRandomLegalMove - Applying Move: ${bestMove} to ${bestTarget}`);
+                console.log(`makeRandomLegalMove - Applying Move: ${bestMove} to ${bestTarget}`);
                 boardState[bestTarget] = 'red';
                 boardState[bestMove] = null;
                 updateBoardDisplay();
-                  removeHighlights();
-                  removeMillLines();
-                 removeMillHighlight();
+                removeHighlights();
+                removeMillLines();
+                removeMillHighlight();
 
-                  const formedMill = checkMill(bestTarget, 'red');
+                const formedMill = checkMill(bestTarget, 'red');
                 if (formedMill) {
                     canRemovePiece = true;
                     updateMessage("Mill formed! " + currentPlayer.toUpperCase() + ", remove an opponent's piece.");
@@ -760,134 +718,117 @@ function makeRandomLegalMove() {
                         setTimeout(makeAIRemovePiece, 250);
                     }
                 } else {
-                     switchTurn();
+                    switchTurn();
                     if (!placingPhase) {
-                      checkWinCondition();
-                   }
-               }
-             } else {
-                 console.error(`makeRandomLegalMove - AI attempted an illegal move (not a neighbor) from ${bestMove} to ${bestTarget}.`);
+                        checkWinCondition();
+                    }
+                }
+            } else {
+                console.error(`makeRandomLegalMove - AI attempted an illegal move (not a neighbor) from ${bestMove} to ${bestTarget}.`);
 
             }
-           } else {
-                 console.error(`makeRandomLegalMove - AI attempted an illegal move (source or target invalid) from ${bestMove} to ${bestTarget}.`);
+        } else {
+            console.error(`makeRandomLegalMove - AI attempted an illegal move (source or target invalid) from ${bestMove} to ${bestTarget}.`);
 
-          }
+        }
     } else {
         console.error("AI has no legal moves (this should ideally be handled by win condition check).");
     }
 }
 
+function makeAIRemovePiece() {
+    console.log(`makeAIRemovePiece() - currentPlayer: ${currentPlayer}`);
+    const opponent = 'blue';
+    const opponentPieces = boardState.reduce((acc, piece, index) => {
+        if (piece === opponent) {
+            acc.push(index);
+        }
+        return acc;
+    }, []);
 
- function makeAIRemovePiece() {
-        console.log(`makeAIRemovePiece() - currentPlayer: ${currentPlayer}`);
-        const opponent = 'blue';
-        const opponentPieces = boardState.reduce((acc, piece, index) => {
-            if (piece === opponent) {
-                acc.push(index);
-            }
-            return acc;
-        }, []);
+    if (opponentPieces.length > 0) {
+        // **1. Prioritize Non-Mill Pieces**
+        let pieceToRemoveIndex;
+        const nonMillPieces = opponentPieces.filter(index => !isPieceInMill(index, opponent));
 
-        if (opponentPieces.length > 0) {
-            let pieceToRemoveIndex;
-            switch (aiDifficulty) {
-                case 'easy':
-                    pieceToRemoveIndex = opponentPieces[Math.floor(Math.random() * opponentPieces.length)];
-                    break;
-                case 'medium':
-                    const safeRemovals = opponentPieces.filter(index => !isPieceInMill(index, opponent));
-                    pieceToRemoveIndex = safeRemovals.length > 0 ? safeRemovals[Math.floor(Math.random() * safeRemovals.length)] : opponentPieces[Math.floor(Math.random() * opponentPieces.length)];
-                    break;
-                case 'hard':
-                    let bestEval = Infinity;
-                    for (const index of opponentPieces) {
-                        const tempBoardState = [...boardState];
-                        tempBoardState[index] = null;
-                        const eval = minimax(tempBoardState, 3, -Infinity, Infinity, true);
-                        if (eval < bestEval) {
-                            bestEval = eval;
-                            pieceToRemoveIndex = index;
-                        }
-                    }
-                    break;
-            }
-
-            if (pieceToRemoveIndex !== undefined && boardState[pieceToRemoveIndex] === opponent) {
-                const canRemove = canOnlyRemoveFromMill(opponent) || !isPieceInMill(pieceToRemoveIndex, opponent);
-                if (canRemove) {
-                    console.log(`makeAIRemovePiece - Removing piece at index: ${pieceToRemoveIndex}`);
-                      boardState[pieceToRemoveIndex] = null;
-                        updateBoardDisplay();
-                       canRemovePiece = false;
-                      removeMillLines();
-                     removeMillHighlight();
-                     switchTurn();
-                     if (!placingPhase) {
-                         checkWinCondition();
-                       }
-                    if (gameMode === 'ai' && currentPlayer === 'red' && !placingPhase) {
-                        setTimeout(makeNextAIMove, 500);
-                    } else if (gameMode === 'ai' && currentPlayer === 'red' && placingPhase) {
-                        setTimeout(makeNextAIMove, 500);
-                    }
-
-                } else {
-                    console.error("AI attempted to remove a piece illegally (in a mill when other options exist).");
-                    // Fallback: Remove a random opponent piece if allowed
-                    if (canOnlyRemoveFromMill(opponent)) {
-                        const randomOpponentPiece = opponentPieces[Math.floor(Math.random() * opponentPieces.length)];
-                         console.log(`makeAIRemovePiece - Removing random piece at index: ${randomOpponentPiece}`);
-                         boardState[randomOpponentPiece] = null;
-                           updateBoardDisplay();
-                           canRemovePiece = false;
-                          removeMillLines();
-                         removeMillHighlight();
-                         switchTurn();
-                           if (!placingPhase) {
-                               checkWinCondition();
-                           }
-                         if (gameMode === 'ai' && currentPlayer === 'red' && !placingPhase) {
-                             setTimeout(makeNextAIMove, 500);
-                         } else if (gameMode === 'ai' && currentPlayer === 'red' && placingPhase) {
-                              setTimeout(makeNextAIMove, 500);
-                         }
-
-                    } else {
-                        console.error("AI could not find a legal piece to remove.");
-                    }
+        if (nonMillPieces.length > 0) {
+            let bestEval = Infinity;
+            let bestRemovalIndex = -1;
+            for (const index of nonMillPieces) {
+                const tempBoardState = [...boardState];
+                tempBoardState[index] = null;
+                const eval = minimax(tempBoardState, 3, -Infinity, Infinity, true);
+                if (eval < bestEval) {
+                    bestEval = eval;
+                    bestRemovalIndex = index;
                 }
+            }
+            pieceToRemoveIndex = bestRemovalIndex;
+        } else {
+           let bestEval = Infinity;
+            let bestRemovalIndex = -1;
+            for (const index of opponentPieces) {
+                const tempBoardState = [...boardState];
+                tempBoardState[index] = null;
+                const eval = minimax(tempBoardState, 3, -Infinity, Infinity, true);
+                if (eval < bestEval) {
+                    bestEval = eval;
+                    bestRemovalIndex = index;
+                }
+            }
+            pieceToRemoveIndex = bestRemovalIndex;
+        }
+        // ** Apply Removal **
+        if (pieceToRemoveIndex !== undefined && boardState[pieceToRemoveIndex] === opponent) {
+            const canRemove = canOnlyRemoveFromMill(opponent) || !isPieceInMill(pieceToRemoveIndex, opponent);
+            if (canRemove) {
+                console.log(`makeAIRemovePiece - Removing piece at index: ${pieceToRemoveIndex}`);
+                boardState[pieceToRemoveIndex] = null;
+                updateBoardDisplay();
+                canRemovePiece = false;
+                removeMillLines();
+                removeMillHighlight();
+                switchTurn();
+                 if (!placingPhase) {
+                    checkWinCondition();
+                }
+                if (gameMode === 'ai' && currentPlayer === 'red' && !placingPhase) {
+                    setTimeout(makeNextAIMove, 500);
+                } else if (gameMode === 'ai' && currentPlayer === 'red' && placingPhase) {
+                    setTimeout(makeNextAIMove, 500);
+                }
+
             } else {
-                console.error("AI attempted to remove an invalid piece.");
-                 // Fallback: Remove a random opponent piece if possible
-                if (opponentPieces.length > 0) {
-                    const randomOpponentPiece = opponentPieces[Math.floor(Math.random() * opponentPieces.length)];
-                     console.log(`makeAIRemovePiece - Removing random piece at index(fallback): ${randomOpponentPiece}`);
-                    boardState[randomOpponentPiece] = null;
-                       updateBoardDisplay();
-                       canRemovePiece = false;
-                      removeMillLines();
-                     removeMillHighlight();
-                     switchTurn();
-                       if (!placingPhase) {
-                           checkWinCondition();
-                       }
-                       if (gameMode === 'ai' && currentPlayer === 'red' && !placingPhase) {
-                           setTimeout(makeNextAIMove, 500);
-                       } else if (gameMode === 'ai' && currentPlayer === 'red' && placingPhase) {
-                           setTimeout(makeNextAIMove, 500);
-                       }
+                  //This case should not happen as the check is performed above
+               console.error("AI attempted to remove a piece illegally (in a mill when other options exist).");
 
-                } else {
-                    console.error("No opponent pieces to remove (should not happen).");
-                }
             }
         } else {
-            console.error("No opponent pieces available for removal, but removal was requested.");
-        }
+            console.error("AI attempted to remove an invalid piece.");
+            if (opponentPieces.length > 0) {
+                  //fallback to random piece
+                const randomOpponentPiece = opponentPieces[Math.floor(Math.random() * opponentPieces.length)];
+                console.log(`makeAIRemovePiece - Removing random piece at index(fallback): ${randomOpponentPiece}`);
+                boardState[randomOpponentPiece] = null;
+                updateBoardDisplay();
+                canRemovePiece = false;
+                removeMillLines();
+                removeMillHighlight();
+                switchTurn();
+                if (!placingPhase) {
+                    checkWinCondition();
+                }
+                 if (gameMode === 'ai' && currentPlayer === 'red' && !placingPhase) {
+                    setTimeout(makeNextAIMove, 500);
+                } else if (gameMode === 'ai' && currentPlayer === 'red' && placingPhase) {
+                    setTimeout(makeNextAIMove, 500);
+                }
+            } else {
+               console.error("No opponent pieces to remove (should not happen).");
+            }
+         }
     }
-
-
+}
 
 function findBestPlaceMove(board, depth) {
     console.log("findBestPlaceMove - Depth:", depth, "board:", board);
@@ -903,21 +844,21 @@ function findBestPlaceMove(board, depth) {
         const tempBoard = [...board];
         tempBoard[point] = 'red';
         const score = minimaxPlace(tempBoard, depth - 1, -Infinity, Infinity, false);
-          console.log(`findBestPlaceMove - Evaluating move ${point} Score:`, score);
+        console.log(`findBestPlaceMove - Evaluating move ${point} Score:`, score);
         if (score > bestScore) {
             bestScore = score;
             bestMove = point;
         }
     }
-      console.log("findBestPlaceMove - Best Move:", bestMove, "Best Score:", bestScore);
+    console.log("findBestPlaceMove - Best Move:", bestMove, "Best Score:", bestScore);
     return bestMove;
 }
 
 function minimaxPlace(board, depth, alpha, beta, isMaximizingPlayer) {
-     console.log(`minimaxPlace - Depth: ${depth}, isMaximizingPlayer: ${isMaximizingPlayer}, Board:`, board);
+    console.log(`minimaxPlace - Depth: ${depth}, isMaximizingPlayer: ${isMaximizingPlayer}, Board:`, board);
     if (depth === 0 || checkWinCondition()) {
-      const eval = evaluateBoard(board);
-          console.log(`minimaxPlace - Depth: ${depth},  Evaluation: ${eval} (terminal)`);
+        const eval = evaluateBoard(board);
+        console.log(`minimaxPlace - Depth: ${depth},  Evaluation: ${eval} (terminal)`);
         return eval;
     }
 
@@ -934,12 +875,12 @@ function minimaxPlace(board, depth, alpha, beta, isMaximizingPlayer) {
             const tempBoard = [...board];
             tempBoard[point] = aiPlayer;
             const eval = minimaxPlace(tempBoard, depth - 1, alpha, beta, false);
-             console.log(`minimaxPlace - Maximizing Player - Evaluating move ${point} at depth ${depth} Score:`, eval);
+            console.log(`minimaxPlace - Maximizing Player - Evaluating move ${point} at depth ${depth} Score:`, eval);
             maxEval = Math.max(maxEval, eval);
             alpha = Math.max(alpha, eval);
             if (beta <= alpha) break;
         }
-      console.log(`minimaxPlace - Maximizing Player, Depth ${depth}, returning MaxEval:`, maxEval);
+        console.log(`minimaxPlace - Maximizing Player, Depth ${depth}, returning MaxEval:`, maxEval);
         return maxEval;
     } else {
         let minEval = Infinity;
@@ -951,12 +892,12 @@ function minimaxPlace(board, depth, alpha, beta, isMaximizingPlayer) {
             const tempBoard = [...board];
             tempBoard[point] = humanPlayer;
             const eval = minimaxPlace(tempBoard, depth - 1, alpha, beta, true);
-             console.log(`minimaxPlace - Minimizing Player - Evaluating move ${point} at depth ${depth} Score:`, eval);
+            console.log(`minimaxPlace - Minimizing Player - Evaluating move ${point} at depth ${depth} Score:`, eval);
             minEval = Math.min(minEval, eval);
             beta = Math.min(beta, eval);
             if (beta <= alpha) break;
         }
-      console.log(`minimaxPlace - Minimizing Player, Depth ${depth}, returning MinEval:`, minEval);
+        console.log(`minimaxPlace - Minimizing Player, Depth ${depth}, returning MinEval:`, minEval);
         return minEval;
     }
 }
@@ -978,8 +919,8 @@ function minimax(board, depth, alpha, beta, isMaximizingPlayer) {
     if (isMaximizingPlayer) {
         let maxEval = -Infinity;
         for (const nextBoard of possibleMoves) {
-           const eval = minimax(nextBoard, depth - 1, alpha, beta, false);
-            console.log(`minimax - Maximizing Player - Depth ${depth},  Evaluating Board: `,nextBoard, "Score:", eval);
+            const eval = minimax(nextBoard, depth - 1, alpha, beta, false);
+            console.log(`minimax - Maximizing Player - Depth ${depth},  Evaluating Board: `, nextBoard, "Score:", eval);
             maxEval = Math.max(maxEval, eval);
             alpha = Math.max(alpha, eval);
             if (beta <= alpha) {
@@ -987,34 +928,34 @@ function minimax(board, depth, alpha, beta, isMaximizingPlayer) {
                 break;
             }
         }
-         console.log(`minimax - Maximizing Player, Depth ${depth}, returning MaxEval:`, maxEval);
+        console.log(`minimax - Maximizing Player, Depth ${depth}, returning MaxEval:`, maxEval);
         return maxEval;
-    }  else {
+    } else {
         let minEval = Infinity;
         for (const nextBoard of possibleMoves) {
             const eval = minimax(nextBoard, depth - 1, alpha, beta, true);
-              console.log(`minimax - Minimizing Player - Depth ${depth}, Evaluating Board:`, nextBoard, "Score:", eval);
+            console.log(`minimax - Minimizing Player - Depth ${depth}, Evaluating Board:`, nextBoard, "Score:", eval);
             minEval = Math.min(minEval, eval);
             beta = Math.min(beta, eval);
-              if (beta <= alpha) {
-                 console.log(`minimax - Minimizing Player - Depth ${depth} - Pruning: beta ${beta} <= alpha ${alpha}`);
+            if (beta <= alpha) {
+                console.log(`minimax - Minimizing Player - Depth ${depth} - Pruning: beta ${beta} <= alpha ${alpha}`);
                 break;
-             }
+            }
         }
-         console.log(`minimax - Minimizing Player, Depth ${depth}, returning MinEval:`, minEval);
+        console.log(`minimax - Minimizing Player, Depth ${depth}, returning MinEval:`, minEval);
         return minEval;
     }
 }
 
 function getAllPossibleBoardStates(board, player) {
     const nextPossibleBoards = [];
-     console.log(`getAllPossibleBoardStates - Player ${player}, Current Board:`, board);
+    console.log(`getAllPossibleBoardStates - Player ${player}, Current Board:`, board);
     const playerPieces = board.reduce((acc, piece, index) => {
         if (piece === player) acc.push(index);
         return acc;
     }, []);
     const canMoveAnywhere = playerPieces.length === 3;
-      console.log(`getAllPossibleBoardStates - Player Pieces:`, playerPieces, "Can Move Anywhere: ", canMoveAnywhere);
+    console.log(`getAllPossibleBoardStates - Player Pieces:`, playerPieces, "Can Move Anywhere: ", canMoveAnywhere);
 
     for (const pieceIndex of playerPieces) {
         const possibleMoves = canMoveAnywhere ? board.reduce((acc, piece, index) => piece === null ? [...acc, index] : acc, []) : neighbors[pieceIndex];
@@ -1024,30 +965,30 @@ function getAllPossibleBoardStates(board, player) {
                 const nextBoard = [...board];
                 nextBoard[targetIndex] = player;
                 nextBoard[pieceIndex] = null;
-                 console.log(`getAllPossibleBoardStates - Move from ${pieceIndex} to ${targetIndex} - Next Board`, nextBoard);
+                console.log(`getAllPossibleBoardStates - Move from ${pieceIndex} to ${targetIndex} - Next Board`, nextBoard);
                 const potentialMill = checkMill(targetIndex, player);
                 if (potentialMill) {
                     const opponent = player === 'red' ? 'blue' : 'red';
                     const opponentPieces = nextBoard.reduce((acc, piece, index) => piece === opponent ? [...acc, index] : acc, []);
                     const canOnlyRemoveFromMillOpponent = canOnlyRemoveFromMill(opponent);
-                    console.log(`getAllPossibleBoardStates - Mill Formed - Pieces: `, opponentPieces, "Can Only Remove From Mill:", canOnlyRemoveFromMillOpponent );
+                    console.log(`getAllPossibleBoardStates - Mill Formed - Pieces: `, opponentPieces, "Can Only Remove From Mill:", canOnlyRemoveFromMillOpponent);
                     opponentPieces.forEach(removeIndex => {
                         if (canOnlyRemoveFromMillOpponent || !isPieceInMill(removeIndex, opponent)) {
                             const boardAfterRemoval = [...nextBoard];
                             boardAfterRemoval[removeIndex] = null;
                             nextPossibleBoards.push(boardAfterRemoval);
-                               console.log(`getAllPossibleBoardStates - Move from ${pieceIndex} to ${targetIndex} with removal at ${removeIndex} - boardAfterRemoval:`, boardAfterRemoval);
+                            console.log(`getAllPossibleBoardStates - Move from ${pieceIndex} to ${targetIndex} with removal at ${removeIndex} - boardAfterRemoval:`, boardAfterRemoval);
 
                         }
                     });
-                     if (opponentPieces.length === 0 || canOnlyRemoveFromMillOpponent) {
-                       nextPossibleBoards.push(nextBoard);
+                    if (opponentPieces.length === 0 || canOnlyRemoveFromMillOpponent) {
+                        nextPossibleBoards.push(nextBoard);
                         console.log(`getAllPossibleBoardStates - Mill Formed - No Remove or Can Only Remove From Mill - Added nextBoard:`, nextBoard);
 
                     }
                 } else {
                     nextPossibleBoards.push(nextBoard);
-                     console.log(`getAllPossibleBoardStates - No Mill Formed - Added nextBoard:`, nextBoard);
+                    console.log(`getAllPossibleBoardStates - No Mill Formed - Added nextBoard:`, nextBoard);
                 }
             }
         }
