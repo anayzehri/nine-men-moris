@@ -1,28 +1,29 @@
 /* style.css */
 
-/*  General Styles and Variables */
+/* ✨ World's Most Desired Nine Men's Morris - General Styles and Variables ✨ */
 :root {
-    --primary-color: #4c6ef5;
-    --secondary-color: #fd7e14;
-    --background-light: #f8f9fa;
-    --background-dark: #212529;
-    --text-light: #343a40;
-    --text-dark: #f8f9fa;
-    --accent-color: #e64980;
-    --shadow-light: rgba(0, 0, 0, 0.1);
-    --shadow-dark: rgba(255, 255, 255, 0.1);
-    --board-bg: #e0cba8; /* Light wood color */
-    --point-color: #a89984; /* Darker wood color */
-    --piece-blue: #1e90ff;
-    --piece-red: #ff4d4d;
-    --highlight-color: #ffc107;
-    --mill-color: #28a745;
-    --transition-speed: 0.3s ease-in-out;
-    --border-radius: 8px;
+    --primary-color: #5e72eb; /* A slightly more vibrant primary */
+    --secondary-color: #f56a46; /* A richer secondary, more inviting */
+    --background-light: #f4f6fc; /* Softer light background */
+    --background-dark: #1a202c; /* Deeper, more luxurious dark background */
+    --text-light: #2d3748;
+    --text-dark: #edf2f7;
+    --accent-color: #9f7aea; /* A sophisticated accent */
+    --shadow-light: rgba(100, 100, 111, 0.2); /* More refined light shadow */
+    --shadow-dark: rgba(0, 0, 0, 0.3); /* Deeper dark shadow */
+    --board-bg: #d2b48c; /* Richer, more textured wood */
+    --point-color: #a0855b; /* Deeper point color for better contrast */
+    --piece-blue: #63b3ed; /* Brighter, more engaging blue */
+    --piece-red: #fc8181; /* Lighter, more appealing red */
+    --highlight-color: #ffc85e; /* A warmer, inviting highlight */
+    --mill-color: #90cdf4; /* A softer, yet distinct mill color */
+    --transition-speed: 0.35s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother, more natural transition */
+    --border-radius: 12px; /* Slightly more rounded */
+    --font-heading: 'Playfair Display', serif; /* Elegant heading font */
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', sans-serif; /* Modern, readable body font */
     background-color: var(--background-light);
     color: var(--text-light);
     margin: 0;
@@ -31,23 +32,24 @@ body {
     align-items: center;
     min-height: 100vh;
     transition: background-color var(--transition-speed), color var(--transition-speed);
-    background-image: url('subtle-background.png'); /* Replace with your texture */
-    background-size: cover;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0H60V60H0V0Z' fill='%23f4f6fc'/%3E%3Cg opacity='0.4'%3E%3Cpath d='M15 3C10.5817 3 7 6.58172 7 11C7 15.4183 10.5817 19 15 19C19.4183 19 23 15.4183 23 11C23 6.58172 19.4183 3 15 3Z' fill='%23e2e8f0'/%3E%3Cpath d='M45 3C40.5817 3 37 6.58172 37 11C37 15.4183 40.5817 19 45 19C49.4183 19 53 15.4183 53 11C53 6.58172 49.4183 3 45 3Z' fill='%23e2e8f0'/%3E%3Cpath d='M15 41C10.5817 41 7 44.5817 7 49C7 53.4183 10.5817 57 15 57C19.4183 57 23 53.4183 23 49C23 44.5817 19.4183 41 15 41Z' fill='%23e2e8f0'/%3E%3Cpath d='M45 41C40.5817 41 37 44.5817 37 49C37 53.4183 40.5817 57 45 57C49.4183 57 53 53.4183 53 49C53 44.5817 49.4183 41 45 41Z' fill='%23e2e8f0'/%3E%3C/g%3E%3C/svg%3E"); /* Subtle, stylish pattern */
+    background-size: 100px 100px;
 }
 
 body.dark-mode {
     background-color: var(--background-dark);
     color: var(--text-dark);
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0H60V60H0V0Z' fill='%231a202c'/%3E%3Cg opacity='0.4'%3E%3Cpath d='M15 3C10.5817 3 7 6.58172 7 11C7 15.4183 10.5817 19 15 19C19.4183 19 23 15.4183 23 11C23 6.58172 19.4183 3 15 3Z' fill='%232d3748'/%3E%3Cpath d='M45 3C40.5817 3 37 6.58172 37 11C37 15.4183 40.5817 19 45 19C49.4183 19 53 15.4183 53 11C53 6.58172 49.4183 3 45 3Z' fill='%232d3748'/%3E%3Cpath d='M15 41C10.5817 41 7 44.5817 7 49C7 53.4183 10.5817 57 15 57C19.4183 57 23 53.4183 23 49C23 44.5817 19.4183 41 15 41Z' fill='%232d3748'/%3E%3Cpath d='M45 41C40.5817 41 37 44.5817 37 49C37 53.4183 40.5817 57 45 57C49.4183 57 53 53.4183 53 49C53 44.5817 49.4183 41 45 41Z' fill='%232d3748'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 .container {
     background-color: var(--background-light);
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px var(--shadow-light);
+    padding: 40px; /* Increased padding for a more spacious feel */
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 30px var(--shadow-light); /* More pronounced shadow */
     text-align: center;
     transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
-    max-width: 900px;
+    max-width: 950px; /* Slightly wider for better content flow */
     width: 95%;
     display: flex;
     flex-direction: column;
@@ -56,12 +58,12 @@ body.dark-mode {
 
 body.dark-mode .container {
     background-color: var(--background-dark);
-    box-shadow: 0 5px 20px var(--shadow-dark);
+    box-shadow: 0 8px 30px var(--shadow-dark);
 }
 
 /* Header Styles */
 header {
-    margin-bottom: 20px;
+    margin-bottom: 30px; /* More space below the header */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -71,14 +73,15 @@ header {
 h1 {
     color: var(--primary-color);
     margin: 0;
-    font-size: 2.5em;
-    text-shadow: 2px 2px 3px var(--shadow-light);
-    transition: color var(--transition-speed);
+    font-size: 3em; /* Larger, more impactful heading */
+    font-family: var(--font-heading);
+    text-shadow: 3px 3px 5px var(--shadow-light);
+    transition: color var(--transition-speed), text-shadow var(--transition-speed);
 }
 
 body.dark-mode h1 {
     color: var(--secondary-color);
-    text-shadow: 2px 2px 3px var(--shadow-dark);
+    text-shadow: 3px 3px 5px var(--shadow-dark);
 }
 
 .theme-toggle-container {
@@ -88,10 +91,10 @@ body.dark-mode h1 {
 #theme-toggle {
     background: none;
     border: none;
-    font-size: 2em;
+    font-size: 2.2em; /* Slightly larger toggle */
     cursor: pointer;
     color: var(--text-light);
-    transition: color var(--transition-speed), transform 0.2s ease-in-out;
+    transition: color var(--transition-speed), transform 0.25s ease-in-out;
 }
 
 body.dark-mode #theme-toggle {
@@ -99,7 +102,7 @@ body.dark-mode #theme-toggle {
 }
 
 #theme-toggle:hover {
-    transform: scale(1.1);
+    transform: rotate(15deg) scale(1.1); /* More engaging hover effect */
 }
 
 /* Game Info Section */
@@ -108,7 +111,7 @@ body.dark-mode #theme-toggle {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-bottom: 25px;
+    margin-bottom: 30px; /* Increased spacing */
 }
 
 .score {
@@ -117,19 +120,23 @@ body.dark-mode #theme-toggle {
 
 .player-score {
     font-weight: bold;
-    padding: 10px 15px;
+    padding: 12px 20px; /* Increased padding */
     border-radius: var(--border-radius);
-    margin: 0 10px;
-    background-color: #eee;
+    margin: 0 12px; /* Adjusted margin */
+    background-color: #e2e8f0; /* Softer background */
     color: var(--text-light);
-    box-shadow: 0 2px 5px var(--shadow-light);
-    transition: background-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed);
+    box-shadow: 0 3px 10px var(--shadow-light); /* More subtle shadow */
+    transition: background-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed), transform 0.1s ease-in-out;
 }
 
 body.dark-mode .player-score {
-    background-color: #444;
+    background-color: #374151; /* Darker background */
     color: var(--text-dark);
-    box-shadow: 0 2px 5px var(--shadow-dark);
+    box-shadow: 0 3px 10px var(--shadow-dark);
+}
+
+.player-score:hover {
+    transform: scale(1.03);
 }
 
 .blue-score {
@@ -143,20 +150,20 @@ body.dark-mode .player-score {
 }
 
 .player-score.current-turn {
-    animation: pulse 1.5s infinite ease-in-out;
-    box-shadow: 0 0 10px var(--highlight-color);
+    animation: pulse 1.7s infinite cubic-bezier(0.4, 0, 0.6, 1); /* More natural pulse */
+    box-shadow: 0 0 15px var(--highlight-color); /* Stronger highlight */
 }
 
 @keyframes pulse {
     0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+    50% { transform: scale(1.08); }
     100% { transform: scale(1); }
 }
 
 .game-mode fieldset {
-    border: 1px solid var(--accent-color);
+    border: 2px solid var(--accent-color); /* Thicker border */
     border-radius: var(--border-radius);
-    padding: 15px;
+    padding: 20px; /* More padding */
     transition: border-color var(--transition-speed);
 }
 
@@ -165,9 +172,10 @@ body.dark-mode .game-mode fieldset {
 }
 
 .game-mode legend {
-    font-weight: bold;
+    font-weight: 600; /* Slightly bolder legend */
     color: var(--accent-color);
-    padding: 0 10px;
+    padding: 0 15px;
+    font-size: 1.1em;
     transition: color var(--transition-speed);
 }
 
@@ -176,22 +184,32 @@ body.dark-mode .game-mode legend {
 }
 
 .game-mode label {
-    margin: 0 10px;
+    margin: 0 15px;
 }
 
 #ai-difficulty {
-    padding: 8px 15px;
+    padding: 10px 20px;
     border-radius: var(--border-radius);
-    border: 1px solid #ccc;
+    border: 1px solid #cbd5e0; /* Softer border */
     background-color: var(--background-light);
     color: var(--text-light);
     transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+    appearance: none; /* Remove default styling for better control */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a0aec0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position-x: 100%;
+    background-position-y: 5px;
+    padding-right: 30px; /* Space for the arrow */
 }
 
 body.dark-mode #ai-difficulty {
-    background-color: #333;
+    background-color: #2d3748;
     color: var(--text-dark);
-    border-color: #555;
+    border-color: #718096;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 }
 
 /* Game Area */
@@ -204,9 +222,15 @@ body.dark-mode #ai-difficulty {
 
 .game-board {
     position: relative;
-    width: 500px;
-    height: 500px;
-    margin-bottom: 20px;
+    width: 550px; /* Slightly larger board */
+    height: 550px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px var(--shadow-light); /* Subtle board shadow */
+    transition: box-shadow var(--transition-speed);
+}
+
+body.dark-mode .game-board {
+    box-shadow: 0 4px 15px var(--shadow-dark);
 }
 
 #board-img {
@@ -225,8 +249,8 @@ body.dark-mode #ai-difficulty {
 
 .point {
     position: absolute;
-    width: 30px; /* Keep the point container size */
-    height: 30px;
+    width: 40px; /* Larger point container */
+    height: 40px;
     border-radius: 50%;
     cursor: pointer;
     transform: translate(-50%, -50%);
@@ -235,21 +259,26 @@ body.dark-mode #ai-difficulty {
     justify-content: center;
     align-items: center;
     z-index: 1; /* Ensure points are below pieces */
+    transition: transform 0.15s ease-in-out;
+}
+
+.point:hover {
+    transform: translate(-50%, -50%) scale(1.05);
 }
 
 .point::before {
     content: "";
     display: block;
-    width: 12px; /* Smaller base point size */
-    height: 12px;
+    width: 14px; /* Slightly larger base point */
+    height: 14px;
     border-radius: 50%;
     background-color: var(--point-color);
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.6, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.6, 1), background-color 0.2s ease;
 }
 
 .point:hover::before {
-    transform: scale(1.1);
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    transform: scale(1.2);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
 }
 
 .point.empty::before {
@@ -259,61 +288,55 @@ body.dark-mode #ai-difficulty {
 .point.blue::before {
     content: "";
     display: block;
-    width: 24px; /* Larger piece size */
-    height: 24px;
+    width: 28px; /* Larger piece size */
+    height: 28px;
     border-radius: 50%;
     background-color: var(--piece-blue);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
     z-index: 2; /* Ensure pieces are above points */
-    animation: piece-pop-in 0.2s ease-out; /* Add piece animation */
+    animation: piece-pop-in 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* More dynamic pop-in */
 }
 
 .point.red::before {
     content: "";
     display: block;
-    width: 24px; /* Larger piece size */
-    height: 24px;
+    width: 28px; /* Larger piece size */
+    height: 28px;
     border-radius: 50%;
     background-color: var(--piece-red);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
     z-index: 2; /* Ensure pieces are above points */
-    animation: piece-pop-in 0.2s ease-out; /* Add piece animation */
+    animation: piece-pop-in 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* More dynamic pop-in */
 }
 
 @keyframes piece-pop-in {
-    0% { transform: scale(0); }
-    100% { transform: scale(1); }
+    0% { transform: scale(0.2); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 .point.highlight::before {
-    box-shadow: 0 0 10px var(--highlight-color);
-    transform: scale(1.2);
+    box-shadow: 0 0 12px var(--highlight-color), 0 0 6px var(--highlight-color) inset; /* Glowing highlight */
+    transform: scale(1.25);
 }
 
 .point.mill-highlight::before {
-    box-shadow: 0 0 10px 5px rgba(40, 167, 69, 0.7);
+    box-shadow: 0 0 15px 7px rgba(144, 205, 244, 0.8); /* More vibrant mill highlight */
 }
 
 .mill-line {
     position: absolute;
-    height: 6px;
+    height: 8px; /* Thicker mill line */
     background-color: var(--mill-color);
-    border-radius: 3px;
+    border-radius: 4px;
     z-index: 2;
-    box-shadow: 0 0 8px 4px rgba(40, 167, 69, 0.5);
+    box-shadow: 0 0 10px 5px rgba(144, 205, 244, 0.6); /* Glowing mill line */
 }
 
-/* Highlight Last Moved Piece (Option 1: Size) */
+/* Highlight Last Moved Piece */
 .point.last-moved::before {
-    transform: scale(1.3); /* Slightly larger */
-    transition: transform 0.2s ease-in-out;
+    border: 3px solid var(--secondary-color); /* Distinct border highlight */
+    transition: border-color 0.2s ease-in-out;
 }
-
-/* Highlight Last Moved Piece (Option 2: Color) */
-/*.point.last-moved::before {*/
-/*    border: 3px solid var(--secondary-color); !* Example highlight color *!*/
-/*    transition: border-color 0.2s ease-in-out;*/
-/*}*/
 
 /* Game Controls */
 .game-controls {
@@ -324,60 +347,78 @@ body.dark-mode #ai-difficulty {
 }
 
 .message {
-    font-size: 1.2em;
-    margin-bottom: 20px;
+    font-size: 1.3em;
+    margin-bottom: 25px;
     color: var(--accent-color);
-    font-weight: bold;
-    transition: color var(--transition-speed);
+    font-weight: 600;
+    text-shadow: 1px 1px 2px var(--shadow-light);
+    transition: color var(--transition-speed), text-shadow var(--transition-speed);
 }
 
 body.dark-mode .message {
     color: var(--primary-color);
+    text-shadow: 1px 1px 2px var(--shadow-dark);
 }
 
 #reset-button {
-    padding: 12px 25px;
-    font-size: 1.1em;
+    padding: 14px 30px;
+    font-size: 1.2em;
     background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
-    transition: background-color var(--transition-speed), transform 0.2s ease-in-out, box-shadow var(--transition-speed);
-    box-shadow: 0 3px 8px var(--shadow-light);
+    transition: background-color var(--transition-speed), transform 0.2s cubic-bezier(0.4, 0, 0.6, 1), box-shadow var(--transition-speed);
+    box-shadow: 0 4px 12px var(--shadow-light);
+    letter-spacing: 0.5px;
 }
 
 body.dark-mode #reset-button {
     background-color: var(--secondary-color);
-    box-shadow: 0 3px 8px var(--shadow-dark);
+    box-shadow: 0 4px 12px var(--shadow-dark);
 }
 
 #reset-button:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
+    transform: scale(1.07);
+    box-shadow: 0 5px 15px var(--shadow-light);
+}
+
+#reset-button:active {
+    transform: scale(1);
+    box-shadow: 0 2px 8px var(--shadow-light) inset;
 }
 
 /* Footer Styles */
 footer {
-    margin-top: 30px;
-    padding: 15px 0;
-    font-size: 0.9em;
-    color: #777;
-    border-top: 1px solid #eee;
+    margin-top: 40px;
+    padding: 20px 0;
+    font-size: 0.95em;
+    color: #94a3b8;
+    border-top: 1px solid #e2e8f0;
     transition: border-color var(--transition-speed), color var(--transition-speed);
 }
 
 body.dark-mode footer {
-    border-top: 1px solid #444;
-    color: #bbb;
+    border-top: 1px solid #374151;
+    color: #6b7280;
 }
 
 footer p {
     margin: 0;
 }
 
-footer i {
+footer a {
     color: var(--accent-color);
+    text-decoration: none;
+    transition: color var(--transition-speed);
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+footer i {
+    color: var(--secondary-color);
 }
 
 /* Utility Classes */
@@ -389,4 +430,4 @@ footer i {
     height: 1px !important;
     width: 1px !important;
     overflow: hidden;
-}
+    }
