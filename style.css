@@ -18,11 +18,12 @@
     --highlight-color: #FFD700; /* Soft gold for highlights */
     --mill-color: #90EE90; /* Light green, subtle confirmation */
     --transition-speed: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* More natural easing */
-    --border-radius: 10px; /* Slightly more rounded */
+    --border-radius: 12px; /* Slightly more rounded */
     --font-family-header: 'Playfair Display', serif;
     --font-family-body: 'Merriweather', serif;
 }
 
+/*  Mobile-First Base Styles */
 body {
     font-family: var(--font-family-body);
     background-color: var(--background-light);
@@ -35,7 +36,9 @@ body {
     transition: background-color var(--transition-speed), color var(--transition-speed);
     background-image: url('data:image/svg+xml;utf8,<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><defs><style>.cls-1{fill:#e8e2d3;}</style></defs><rect class="cls-1" width="300" height="300"/></svg>'); /* Subtle paper-like texture */
     background-size: cover;
-    overflow-y: scroll; /* Ensure scrollbar doesn't cause layout shift */
+    overflow-y: auto; /* Allow scrolling if needed */
+    padding: 20px; /* Add some padding around the edges */
+    box-sizing: border-box; /* Include padding in width and height */
 }
 
 body.dark-mode {
@@ -46,17 +49,18 @@ body.dark-mode {
 
 .container {
     background-color: var(--background-light);
-    padding: 40px;
+    padding: 30px; /* Adjust padding for mobile */
     border-radius: 20px;
     box-shadow: 0 8px 30px var(--shadow-light);
     text-align: center;
     transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
-    max-width: 950px;
-    width: 95%;
+    width: 100%; /* Take full width on mobile */
+    max-width: 600px; /* Limit width on larger screens */
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative; /* For potential absolute positioning of elements */
+    margin: auto; /* Center the container */
 }
 
 body.dark-mode .container {
@@ -66,28 +70,28 @@ body.dark-mode .container {
 
 /* Header Styles - Grand and Elegant */
 header {
-    margin-bottom: 30px;
+    margin-bottom: 20px; /* Adjust spacing for mobile */
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding-bottom: 15px;
+    padding-bottom: 10px;
     border-bottom: 2px solid var(--secondary-color);
 }
 
 h1 {
     color: var(--primary-color);
     margin: 0;
-    font-size: 3em;
+    font-size: 2.5em; /* Adjust font size for mobile */
     font-family: var(--font-family-header);
-    text-shadow: 3px 3px 4px var(--shadow-light);
+    text-shadow: 2px 2px 3px var(--shadow-light);
     transition: color var(--transition-speed);
     letter-spacing: 1px;
 }
 
 body.dark-mode h1 {
     color: var(--secondary-color);
-    text-shadow: 3px 3px 4px var(--shadow-dark);
+    text-shadow: 2px 2px 3px var(--shadow-dark);
 }
 
 .theme-toggle-container {
@@ -97,10 +101,12 @@ body.dark-mode h1 {
 #theme-toggle {
     background: none;
     border: none;
-    font-size: 2.2em;
+    font-size: 2em; /* Adjust size for mobile */
     cursor: pointer;
     color: var(--text-light);
     transition: color var(--transition-speed), transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bouncy animation */
+    padding: 8px; /* Add some padding for touch target */
+    margin-left: 10px;
 }
 
 body.dark-mode #theme-toggle {
@@ -114,25 +120,40 @@ body.dark-mode #theme-toggle {
 /* Game Info Section - Clear and Informative */
 .game-info {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column; /* Stack elements on mobile */
     align-items: center;
     width: 100%;
-    margin-bottom: 30px;
+    margin-bottom: 20px; /* Adjust spacing for mobile */
+}
+
+@media (min-width: 600px) {
+    .game-info {
+        flex-direction: row; /* Display side-by-side on larger screens */
+        justify-content: space-between;
+    }
 }
 
 .score {
     display: flex;
+    margin-bottom: 15px; /* Add space between scores on mobile */
+}
+
+@media (min-width: 600px) {
+    .score {
+        margin-bottom: 0;
+    }
 }
 
 .player-score {
     font-weight: bold;
-    padding: 12px 20px;
+    padding: 10px 16px; /* Adjust padding for mobile */
     border-radius: var(--border-radius);
-    margin: 0 10px;
+    margin: 0 8px;
     background-color: #eee;
     color: var(--text-light);
     box-shadow: 0 3px 8px var(--shadow-light);
     transition: background-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed), transform 0.2s ease-in-out;
+    font-size: 0.9em; /* Adjust font size for mobile */
 }
 
 body.dark-mode .player-score {
@@ -169,7 +190,8 @@ body.dark-mode .player-score {
 .game-mode fieldset {
     border: 2px solid var(--accent-color);
     border-radius: var(--border-radius);
-    padding: 20px;
+    padding: 15px; /* Adjust padding for mobile */
+    margin-top: 10px; /* Add some space above on mobile */
     transition: border-color var(--transition-speed);
 }
 
@@ -180,8 +202,8 @@ body.dark-mode .game-mode fieldset {
 .game-mode legend {
     font-weight: bold;
     color: var(--accent-color);
-    padding: 0 15px;
-    font-size: 1.1em;
+    padding: 0 12px;
+    font-size: 1em; /* Adjust font size for mobile */
     transition: color var(--transition-speed);
 }
 
@@ -190,16 +212,17 @@ body.dark-mode .game-mode legend {
 }
 
 .game-mode label {
-    margin: 0 15px;
+    margin: 0 10px;
+    font-size: 0.9em; /* Adjust font size for mobile */
 }
 
 #ai-difficulty {
-    padding: 10px 20px;
+    padding: 8px 16px; /* Adjust padding for mobile */
     border-radius: var(--border-radius);
     border: 1px solid #aaa;
     background-color: var(--background-light);
     color: var(--text-light);
-    font-size: 1em;
+    font-size: 0.9em; /* Adjust font size for mobile */
     appearance: none; /* Remove default styling */
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -210,7 +233,7 @@ body.dark-mode .game-mode legend {
 #ai-difficulty:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 5px rgba(var(--primary-color-rgb), 0.5); /* Need to define --primary-color-rgb if you want this */
+    box-shadow: 0 0 5px rgba(139, 69, 19, 0.5); /* Using RGB of primary color */
 }
 
 body.dark-mode #ai-difficulty {
@@ -229,13 +252,16 @@ body.dark-mode #ai-difficulty {
 
 .game-board {
     position: relative;
-    width: 550px; /* Slightly larger for better visual impact */
-    height: 550px;
-    margin-bottom: 30px;
+    width: 90vw; /* Take up most of the viewport width on mobile */
+    max-width: 500px; /* Limit size on larger screens */
+    height: 90vw; /* Make it square */
+    max-height: 500px;
+    margin-bottom: 20px; /* Adjust spacing for mobile */
     box-shadow: 0 5px 15px var(--shadow-light);
     border-radius: 10px;
     overflow: hidden; /* Clip any overflowing elements */
     transition: box-shadow var(--transition-speed);
+    user-select: none; /* Prevent text selection on tap and drag */
 }
 
 body.dark-mode .game-board {
@@ -258,8 +284,8 @@ body.dark-mode .game-board {
 
 .point {
     position: absolute;
-    width: 40px; /* Larger touch target */
-    height: 40px;
+    width: calc(100% / 8); /* Adjust based on board layout */
+    height: calc(100% / 8);
     border-radius: 50%;
     cursor: pointer;
     transform: translate(-50%, -50%);
@@ -278,8 +304,8 @@ body.dark-mode .game-board {
 .point::before {
     content: "";
     display: block;
-    width: 16px; /* Slightly larger base point size */
-    height: 16px;
+    width: 20%; /* Adjust size relative to point container */
+    height: 20%;
     border-radius: 50%;
     background-color: var(--point-color);
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease-in-out, background-color 0.2s ease; /* Springy hover */
@@ -298,8 +324,8 @@ body.dark-mode .game-board {
 .point.red::before {
     content: "";
     display: block;
-    width: 28px; /* More substantial piece size */
-    height: 28px;
+    width: 60%; /* More substantial piece size */
+    height: 60%;
     border-radius: 50%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
     z-index: 2; /* Ensure pieces are above points */
@@ -310,12 +336,14 @@ body.dark-mode .game-board {
     background-color: var(--piece-blue);
     /* Inner shadow for depth */
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 2px 5px rgba(0, 0, 0, 0.6);
+    animation-delay: 0.1s; /* Stagger animation for better visual */
 }
 
 .point.red::before {
     background-color: var(--piece-red);
     /* Inner shadow for depth */
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 2px 5px rgba(0, 0, 0, 0.6);
+    animation-delay: 0.1s;
 }
 
 @keyframes piece-drop {
@@ -326,6 +354,7 @@ body.dark-mode .game-board {
 .point.highlight::before {
     box-shadow: 0 0 12px var(--highlight-color);
     transform: scale(1.3);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .point.mill-highlight::before {
@@ -334,11 +363,17 @@ body.dark-mode .game-board {
 
 .mill-line {
     position: absolute;
-    height: 8px; /* More prominent line */
+    height: 6px; /* More prominent line */
     background-color: var(--mill-color);
-    border-radius: 4px;
+    border-radius: 3px;
     z-index: 2;
-    box-shadow: 0 0 10px 5px rgba(144, 238, 144, 0.6); /* Soft green glow */
+    box-shadow: 0 0 8px 4px rgba(144, 238, 144, 0.6); /* Soft green glow */
+    animation: mill-flash 1s ease-in-out infinite alternate; /* Subtle flash animation */
+}
+
+@keyframes mill-flash {
+    from { opacity: 0.6; }
+    to { opacity: 1; }
 }
 
 /* Highlight Last Moved Piece - Subtle and Clear */
@@ -353,14 +388,17 @@ body.dark-mode .game-board {
     flex-direction: column;
     align-items: center;
     width: 100%;
+    margin-top: 20px; /* Add space above controls */
 }
 
 .message {
-    font-size: 1.3em;
-    margin-bottom: 25px;
+    font-size: 1.2em; /* Adjust font size for mobile */
+    margin-bottom: 20px; /* Adjust spacing for mobile */
     color: var(--accent-color);
     font-weight: bold;
     transition: color var(--transition-speed), transform 0.2s ease-in-out;
+    animation-duration: 0.7s;
+    animation-timing-function: ease-out;
 }
 
 body.dark-mode .message {
@@ -368,13 +406,13 @@ body.dark-mode .message {
 }
 
 .message.announce {
-    animation: fadeInUp 0.5s ease-out;
+    animation-name: fadeInUp;
 }
 
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(15px);
     }
     to {
         opacity: 1;
@@ -383,14 +421,14 @@ body.dark-mode .message {
 }
 
 #reset-button {
-    padding: 14px 30px;
-    font-size: 1.2em;
+    padding: 12px 24px; /* Adjust padding for mobile */
+    font-size: 1.1em; /* Adjust font size for mobile */
     background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
-    transition: background-color var(--transition-speed), transform 0.2s ease-in-out, box-shadow var(--transition-speed);
+    transition: background-color var(--transition-speed), transform 0.2s cubic-bezier(0.4, 0.0, 0.2, 1), box-shadow var(--transition-speed); /* More dynamic ease */
     box-shadow: 0 4px 10px var(--shadow-light);
     font-weight: bold;
     letter-spacing: 0.5px;
@@ -403,20 +441,20 @@ body.dark-mode #reset-button {
 }
 
 #reset-button:hover {
-    transform: translateY(-3px);
+    transform: scale(1.05);
     box-shadow: 0 6px 12px var(--shadow-light);
 }
 
 #reset-button:active {
-    transform: translateY(-1px);
+    transform: scale(0.98);
     box-shadow: 0 3px 8px var(--shadow-light);
 }
 
 /* Footer Styles - Understated Elegance */
 footer {
-    margin-top: 40px;
-    padding: 20px 0;
-    font-size: 0.95em;
+    margin-top: 30px; /* Adjust spacing for mobile */
+    padding: 15px 0; /* Adjust padding for mobile */
+    font-size: 0.9em; /* Adjust font size for mobile */
     color: #999;
     border-top: 1px solid #ddd;
     transition: border-color var(--transition-speed), color var(--transition-speed);
@@ -434,6 +472,15 @@ footer p {
 
 footer i {
     color: var(--accent-color);
+    animation: heartBeat 1.5s infinite; /* Add a subtle heartbeat animation */
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    14% { transform: scale(1.1); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.1); }
+    70% { transform: scale(1); }
 }
 
 /* Utility Classes */
@@ -446,3 +493,92 @@ footer i {
     width: 1px !important;
     overflow: hidden;
 }
+
+/*  Media Query for Larger Screens */
+@media (min-width: 768px) {
+    .container {
+        padding: 50px;
+    }
+
+    h1 {
+        font-size: 3em;
+    }
+
+    .game-info {
+        margin-bottom: 40px;
+    }
+
+    .game-board {
+        width: 550px;
+        height: 550px;
+        margin-bottom: 30px;
+    }
+
+    .player-score {
+        padding: 12px 20px;
+        font-size: 1em;
+        margin: 0 10px;
+    }
+
+    .game-mode fieldset {
+        padding: 20px;
+    }
+
+    .game-mode legend {
+        font-size: 1.1em;
+    }
+
+    .game-mode label {
+        margin: 0 15px;
+    }
+
+    #ai-difficulty {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+
+    .message {
+        font-size: 1.3em;
+        margin-bottom: 25px;
+    }
+
+    #reset-button {
+        padding: 14px 30px;
+        font-size: 1.2em;
+    }
+
+    footer {
+        padding: 20px 0;
+        font-size: 0.95em;
+    }
+}
+
+/* Animations and Transitions Enhancement */
+
+/*  Smooth Piece Movement (consider adding JavaScript for actual movement) */
+.point.moving-piece::before {
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), top 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), left 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.2s ease-in-out;
+}
+
+/* Subtle Hover Effect on Points */
+.point:not(.empty):hover::before {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/*  Visual Feedback for Valid Moves (Example - you might need JS to add this class) */
+.point.valid-move::before {
+    border: 3px dashed var(--highlight-color);
+    transition: border-color 0.3s ease-in-out;
+}
+
+/*  Animation for Mill Formation */
+.mill-formed .point::before {
+    animation: mill-indicator 1s ease-out forwards;
+}
+
+@keyframes mill-indicator {
+    0% { transform: scale(1); box-shadow: 0 0 12px var(--highlight-color); }
+    50% { transform: scale(1.2); box-shadow: 0 0 20px var(--highlight-color); }
+    100% { transform: scale(1); box-shadow: 0 0 12px var(--highlight-color); }
+        }
