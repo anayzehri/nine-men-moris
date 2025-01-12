@@ -1,113 +1,131 @@
-/* style.css - The World's Best Designed Nine Men's Morris Website */
+/* style.css - The World's Most Exquisitely Designed Nine Men's Morris Website - A Mobile Masterpiece, Reforged */
 
-/*  General Styles and Variables - Refined and Luxurious */
+/*  General Styles and Variables - Supreme Refinement and Luxurious Feel - Mobile First Obsession */
 :root {
-    --primary-color: #8B4513; /* Rich brown, like polished wood */
-    --secondary-color: #D2B48C; /* Light beige, like parchment */
-    --background-light: #f5f0e1; /* Off-white, slightly textured */
-    --background-dark: #333; /* Dark charcoal, sophisticated */
-    --text-light: #333; /* Dark grey, readable */
-    --text-dark: #f0f0f0; /* Light grey, soft */
-    --accent-color: #A0522D; /*  Saddle brown, for highlights */
-    --shadow-light: rgba(0, 0, 0, 0.15);
-    --shadow-dark: rgba(255, 255, 255, 0.1);
-    --board-bg: #c69c6d; /* Medium wood grain */
-    --point-color: #a87f59; /* Darker wood for points */
-    --piece-blue: #5271FF; /* Elegant blue */
-    --piece-red: #FF6B6B; /* Sophisticated red */
-    --highlight-color: #FFD700; /* Soft gold for highlights */
-    --mill-color: #90EE90; /* Light green, subtle confirmation */
-    --transition-speed: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* More natural easing */
-    --border-radius: 14px; /* Slightly more rounded for touch */
-    --font-family-header: 'Playfair Display', serif;
-    --font-family-body: 'Merriweather', serif;
+    --primary-color: #4e342e; /* Deep, earthy brown, like rich soil */
+    --secondary-color: #f5f5f0; /* Soft, creamy off-white, like aged paper */
+    --background-light: #fafafa; /* Very light grey, almost pure white */
+    --background-dark: #1e1e1e; /* Deep charcoal, near black, for immersive dark mode */
+    --text-light: #212121; /* True black, for crisp text on light backgrounds */
+    --text-dark: #f0f0f0; /* Light grey, excellent readability on dark */
+    --accent-color: #a07050; /* Muted bronze, for elegant highlights */
+    --shadow-light: rgba(0, 0, 0, 0.25); /* Slightly stronger, softer shadow */
+    --shadow-dark: rgba(255, 255, 255, 0.2); /* Subtle highlight shadow for dark mode */
+    --board-bg: linear-gradient(135deg, #b08968, #d3ac7b); /* More nuanced wood gradient */
+    --point-color: #8b5f3f; /* Richer, darker brown for the points */
+    --piece-blue: #3f51b5; /* Deep indigo, sophisticated and modern */
+    --piece-red: #e53935; /* Bold, yet refined crimson */
+    --highlight-color: #ffc107; /* Warm amber, for captivating highlights */
+    --mill-color: #8bc34a; /* Muted lime green, subtle yet clear */
+    --transition-speed: 0.5s cubic-bezier(0.645, 0.045, 0.355, 1); /* Easing with a smooth start and stop */
+    --border-radius: 22px; /* Slightly more rounded corners for a tactile feel */
+    --font-family-header: 'Playfair Display SC', serif; /* Elegant and slightly more decorative */
+    --font-family-body: 'Roboto', sans-serif; /* Clean, highly readable sans-serif */
+    --touch-target-size: 48px; /* Standard minimum touch target size */
 }
 
-/*  Mobile-First Base Styles - Enhanced for Touch */
+/* Global Reset and Enhancements */
+*, *::before, *::after {
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility; /* Improve text rendering */
+    -webkit-font-smoothing: antialiased; /* For smoother fonts on WebKit browsers */
+    -moz-osx-font-smoothing: grayscale; /* For smoother fonts on Firefox */
+    -webkit-tap-highlight-color: transparent; /* Remove highlight on tap (iOS) */
+}
+
+html, body {
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
 body {
     font-family: var(--font-family-body);
     background-color: var(--background-light);
     color: var(--text-light);
     margin: 0;
     display: flex;
-    justify-content: center;
-    align-items: flex-start; /* Align items to the start for better mobile flow */
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     min-height: 100vh;
     transition: background-color var(--transition-speed), color var(--transition-speed);
-    background-image: url('data:image/svg+xml;utf8,<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><defs><style>.cls-1{fill:#e8e2d3;}</style></defs><rect class="cls-1" width="300" height="300"/></svg>'); /* Subtle paper-like texture */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><pattern id="dotsLight" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#eee"/></pattern><rect width="100" height="100" fill="url(#dotsLight)"/></svg>'); /* Very subtle dot pattern */
     background-size: cover;
-    overflow-y: auto;
-    padding: 15px; /* Slightly reduced padding */
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent; /* Remove default tap highlight */
+    padding: 15px; /* Reduced padding for smaller screens */
+    overscroll-behavior-y: contain; /* Prevent pull-to-refresh glow */
 }
 
 body.dark-mode {
     background-color: var(--background-dark);
     color: var(--text-dark);
-    background-image: url('data:image/svg+xml;utf8,<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><defs><style>.cls-1{fill:#2a2a2a;}</style></defs><rect class="cls-1" width="300" height="300"/></svg>');
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><pattern id="dotsDark" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#333"/></pattern><rect width="100" height="100" fill="url(#dotsDark)"/></svg>'); /* Dark mode dot pattern */
 }
 
 .container {
     background-color: var(--background-light);
-    padding: 25px; /* Further reduced padding */
-    border-radius: 22px; /* Slightly more rounded */
-    box-shadow: 0 6px 25px var(--shadow-light); /* Reduced shadow intensity */
+    padding: 30px; /* Slightly reduced padding for mobile */
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 35px var(--shadow-light); /* Adjusted shadow for mobile */
     text-align: center;
     transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
-    width: 100%;
-    max-width: 550px; /* Further limit width on larger mobile screens */
+    width: 100%; /* Full width on mobile */
+    max-width: 600px; /* Still maintain a max-width */
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
-    margin: 20px auto; /* Add top margin for better spacing */
+    margin-bottom: 30px; /* Reduced bottom margin */
 }
 
 body.dark-mode .container {
     background-color: var(--background-dark);
-    box-shadow: 0 6px 25px var(--shadow-dark);
+    box-shadow: 0 8px 35px var(--shadow-dark);
 }
 
-/* Header Styles - Grand and Elegant, Scaled for Mobile */
+/* Header Styles - A Statement of Elegance - Mobile First */
 header {
-    margin-bottom: 15px; /* Reduced bottom margin */
+    margin-bottom: 25px; /* Reduced bottom margin */
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding-bottom: 8px; /* Reduced padding */
-    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 12px; /* Reduced padding */
+    border-bottom: 2px double var(--secondary-color); /* Slightly thinner border */
 }
 
 h1 {
     color: var(--primary-color);
     margin: 0;
-    font-size: 2.2em; /* Slightly smaller font size */
+    font-size: 2.5em; /* Slightly smaller font for mobile */
     font-family: var(--font-family-header);
-    text-shadow: 1px 1px 2px var(--shadow-light); /* Reduced text shadow */
-    transition: color var(--transition-speed);
+    text-shadow: 1px 1px 3px var(--shadow-light); /* Reduced text shadow */
+    transition: color var(--transition-speed), transform 0.3s ease-in-out; /* Subtle hover effect */
     letter-spacing: 0.5px; /* Reduced letter spacing */
 }
 
 body.dark-mode h1 {
     color: var(--secondary-color);
-    text-shadow: 1px 1px 2px var(--shadow-dark);
+    text-shadow: 1px 1px 3px var(--shadow-dark);
+}
+
+h1:hover {
+    transform: scale(1.02); /* Reduced hover scale */
 }
 
 .theme-toggle-container {
     /* Styles for the toggle button */
+    margin-left: 10px; /* Add some spacing on mobile */
 }
 
 #theme-toggle {
     background: none;
     border: none;
-    font-size: 1.8em; /* Slightly smaller toggle icon */
+    font-size: 2.2em; /* Slightly smaller icon */
     cursor: pointer;
     color: var(--text-light);
-    transition: color var(--transition-speed), transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-    padding: 6px; /* Reduced padding */
-    margin-left: 5px; /* Reduced margin */
+    transition: color var(--transition-speed), transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* More pronounced bounce */
+    padding: 10px; /* Adjust padding */
+    margin-left: auto; /* Push to the right */
 }
 
 body.dark-mode #theme-toggle {
@@ -115,97 +133,91 @@ body.dark-mode #theme-toggle {
 }
 
 #theme-toggle:hover {
-    transform: rotate(10deg) scale(1.05); /* Reduced hover effect */
+    transform: rotate(25deg) scale(1.1); /* Adjusted hover */
 }
 
-/* Game Info Section - Clear and Informative, Optimized for Mobile */
+/* Game Info Section - Clear and Beautifully Presented - Mobile First */
 .game-info {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    margin-bottom: 15px; /* Reduced bottom margin */
-}
-
-@media (min-width: 500px) {
-    .game-info {
-        flex-direction: row;
-        justify-content: space-between;
-    }
+    margin-bottom: 25px; /* Reduced bottom margin */
+    padding: 12px; /* Reduced padding */
+    border-radius: calc(var(--border-radius) * 0.7);
+    background-color: rgba(var(--secondary-color-rgb, 245, 245, 240), 0.2); /* Even more subtle background */
+    backdrop-filter: blur(8px); /* Slightly reduced blur */
 }
 
 .score {
     display: flex;
-    margin-bottom: 10px; /* Reduced spacing */
-}
-
-@media (min-width: 500px) {
-    .score {
-        margin-bottom: 0;
-    }
+    margin-bottom: 15px; /* Reduced margin */
 }
 
 .player-score {
     font-weight: bold;
-    padding: 8px 14px; /* Further reduced padding */
-    border-radius: var(--border-radius);
-    margin: 0 6px; /* Reduced margin */
+    padding: 12px 22px; /* Reduced padding */
+    border-radius: calc(var(--border-radius) * 0.6);
+    margin: 0 10px; /* Reduced margin */
     background-color: #eee;
     color: var(--text-light);
-    box-shadow: 0 2px 6px var(--shadow-light); /* Reduced shadow */
-    transition: background-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed), transform 0.15s ease-in-out; /* Faster transition */
-    font-size: 0.85em; /* Slightly smaller font size */
+    box-shadow: 0 4px 10px var(--shadow-light); /* Adjusted shadow */
+    transition: background-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Springy hover */
+    font-size: 1em; /* Slightly smaller font */
 }
 
 body.dark-mode .player-score {
     background-color: #444;
     color: var(--text-dark);
-    box-shadow: 0 2px 6px var(--shadow-dark);
+    box-shadow: 0 4px 10px var(--shadow-dark);
 }
 
 .player-score:hover {
-    transform: translateY(-1px); /* Reduced hover lift */
+    transform: translateY(-3px); /* Reduced hover */
 }
 
 .blue-score {
     background-color: var(--piece-blue);
     color: white;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7); /* Reduced shadow */
 }
 
 .red-score {
     background-color: var(--piece-red);
     color: white;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
 }
 
 .player-score.current-turn {
-    animation: pulse 1.5s infinite cubic-bezier(0.4, 0, 0.6, 1); /* Slightly faster pulse */
-    box-shadow: 0 0 10px var(--highlight-color); /* Reduced glow */
+    animation: pulse 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1); /* More refined pulse */
+    box-shadow: 0 0 20px var(--highlight-color); /* More intense glow */
 }
 
 @keyframes pulse {
     0% { transform: scale(1); }
-    50% { transform: scale(1.05); } /* Reduced scale */
+    50% { transform: scale(1.1); } /* More noticeable pulse */
     100% { transform: scale(1); }
 }
 
 .game-mode fieldset {
     border: 2px solid var(--accent-color);
-    border-radius: var(--border-radius);
-    padding: 12px; /* Reduced padding */
-    margin-top: 8px; /* Reduced top margin */
-    transition: border-color var(--transition-speed);
-    font-size: 0.9em; /* Slightly smaller font size */
+    border-radius: calc(var(--border-radius) * 0.6);
+    padding: 20px; /* Reduced padding */
+    transition: border-color var(--transition-speed), box-shadow 0.3s ease-in-out;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Reduced shadow */
+    margin-bottom: 10px; /* Add some spacing below the fieldset */
 }
 
 body.dark-mode .game-mode fieldset {
     border-color: var(--primary-color);
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
 }
 
 .game-mode legend {
     font-weight: bold;
     color: var(--accent-color);
-    padding: 0 10px;
-    font-size: 0.95em; /* Slightly smaller font size */
+    padding: 0 15px; /* Reduced padding */
+    font-size: 1.1em;
     transition: color var(--transition-speed);
 }
 
@@ -214,28 +226,50 @@ body.dark-mode .game-mode legend {
 }
 
 .game-mode label {
-    margin: 0 8px; /* Reduced margin */
-    font-size: 0.85em; /* Slightly smaller font size */
+    margin: 0 15px; /* Reduced margin */
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+}
+
+.game-mode input[type="radio"] {
+    margin-right: 5px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--accent-color);
+    border-radius: 50%;
+    background-color: transparent;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.game-mode input[type="radio"]:checked {
+    background-color: var(--accent-color);
 }
 
 #ai-difficulty {
-    padding: 6px 12px; /* Further reduced padding */
-    border-radius: var(--border-radius);
-    border: 1px solid #aaa;
+    padding: 10px 20px; /* Reduced padding */
+    border-radius: calc(var(--border-radius) * 0.5);
+    border: 1.5px solid #ccc; /* Thinner border */
     background-color: var(--background-light);
     color: var(--text-light);
-    font-size: 0.85em; /* Slightly smaller font size */
+    font-size: 1em;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
-    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed), box-shadow 0.15s ease-in-out; /* Faster transition */
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed), box-shadow 0.3s ease-in-out;
+    margin-top: 10px; /* Add some space above the select */
 }
 
 #ai-difficulty:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 4px rgba(139, 69, 19, 0.5);
+    box-shadow: 0 0 6px rgba(78, 52, 46, 0.7);
 }
 
 body.dark-mode #ai-difficulty {
@@ -244,7 +278,7 @@ body.dark-mode #ai-difficulty {
     border-color: #777;
 }
 
-/* Game Area - The Heart of the Design, Mobile Optimized */
+/* Game Area - The Heart of the Masterpiece - Mobile First Focus */
 .game-area {
     display: flex;
     flex-direction: column;
@@ -254,26 +288,28 @@ body.dark-mode #ai-difficulty {
 
 .game-board {
     position: relative;
-    width: 95vw; /* Take up more viewport width */
-    max-width: 450px; /* Further reduced max width */
-    height: 95vw;
-    max-height: 450px;
-    margin-bottom: 15px; /* Reduced bottom margin */
-    box-shadow: 0 4px 12px var(--shadow-light); /* Reduced shadow */
-    border-radius: 12px; /* Slightly more rounded */
+    width: 100%;
+    max-width: 450px; /* Slightly smaller for better fit on mobile */
+    aspect-ratio: 1 / 1;
+    margin-bottom: 30px; /* Reduced bottom margin */
+    box-shadow: 0 6px 25px var(--shadow-light); /* Adjusted shadow */
+    border-radius: calc(var(--border-radius) * 1.2); /* Even more rounded */
     overflow: hidden;
     transition: box-shadow var(--transition-speed);
-    user-select: none;
+    background-color: var(--board-bg);
+    border: 1px solid rgba(0, 0, 0, 0.08); /* Even more subtle border */
 }
 
 body.dark-mode .game-board {
-    box-shadow: 0 4px 12px var(--shadow-dark);
+    box-shadow: 0 6px 25px var(--shadow-dark);
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 #board-img {
     width: 100%;
     height: 100%;
     display: block;
+    opacity: 0.95; /* Slightly more visible board */
 }
 
 .points {
@@ -286,8 +322,8 @@ body.dark-mode .game-board {
 
 .point {
     position: absolute;
-    width: calc(100% / 8);
-    height: calc(100% / 8);
+    width: var(--touch-target-size); /* Generous touch target */
+    height: var(--touch-target-size);
     border-radius: 50%;
     cursor: pointer;
     transform: translate(-50%, -50%);
@@ -296,26 +332,26 @@ body.dark-mode .game-board {
     justify-content: center;
     align-items: center;
     z-index: 1;
-    transition: transform 0.1s ease-in-out;
+    transition: transform 0.2s ease-in-out;
 }
 
 .point:hover {
-    transform: translate(-50%, -50%) scale(1.03); /* Reduced hover scale */
+    transform: translate(-50%, -50%) scale(1.08); /* Reduced hover scale */
 }
 
 .point::before {
     content: "";
     display: block;
-    width: 22%; /* Slightly larger base point */
-    height: 22%;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     background-color: var(--point-color);
-    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease-in-out, background-color 0.15s ease; /* Faster transitions */
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease-in-out, background-color 0.3s ease;
 }
 
 .point:hover::before {
-    transform: scale(1.1);
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3); /* Reduced shadow */
+    transform: scale(1.2); /* Reduced hover scale */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6); /* Reduced shadow */
 }
 
 .point.empty::before {
@@ -326,265 +362,788 @@ body.dark-mode .game-board {
 .point.red::before {
     content: "";
     display: block;
-    width: 55%; /* Slightly smaller piece size */
-    height: 55%;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); /* Reduced shadow */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.8); /* Deeper shadow for pieces */
     z-index: 2;
-    animation: piece-drop 0.25s ease-out; /* Slightly faster drop */
+    animation: piece-drop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* More fluid drop */
 }
 
 .point.blue::before {
     background-color: var(--piece-blue);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 4px rgba(0, 0, 0, 0.5); /* Reduced shadow */
-    animation-delay: 0.05s; /* Faster stagger */
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5), 0 3px 6px rgba(0, 0, 0, 0.8);
 }
 
 .point.red::before {
     background-color: var(--piece-red);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 4px rgba(0, 0, 0, 0.5); /* Reduced shadow */
-    animation-delay: 0.05s;
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5), 0 3px 6px rgba(0, 0, 0, 0.8);
 }
 
 @keyframes piece-drop {
-    0% { transform: translateY(-40%); opacity: 0; }
-    100% { transform: translateY(0); opacity: 1; }
+    0% { transform: translateY(-60%) scale(0.6); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 .point.highlight::before {
-    box-shadow: 0 0 8px var(--highlight-color); /* Reduced glow */
-    transform: scale(1.2); /* Reduced scale */
-    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out; /* Faster transition */
+    box-shadow: 0 0 16px var(--highlight-color); /* Reduced glow */
+    transform: scale(1.3); /* Reduced scale */
 }
 
 .point.mill-highlight::before {
-    box-shadow: 0 0 8px 4px rgba(144, 238, 144, 0.7); /* Reduced glow */
+    box-shadow: 0 0 16px 8px rgba(139, 195, 74, 0.6); /* Softer, wider glow */
 }
 
 .mill-line {
     position: absolute;
-    height: 5px; /* Slightly thinner line */
+    height: 8px; /* Slightly thinner line */
     background-color: var(--mill-color);
-    border-radius: 2.5px;
+    border-radius: 5px;
     z-index: 2;
-    box-shadow: 0 0 6px 3px rgba(144, 238, 144, 0.5); /* Reduced glow */
-    animation: mill-flash 1.2s ease-in-out infinite alternate; /* Slightly slower flash */
+    box-shadow: 0 0 12px 6px rgba(139, 195, 74, 0.5); /* Refined glow */
 }
 
-@keyframes mill-flash {
-    from { opacity: 0.5; }
-    to { opacity: 0.9; }
-}
-
-/* Highlight Last Moved Piece - Subtle and Clear */
+/* Highlight Last Moved Piece - Engaging and Clear - Mobile First */
 .point.last-moved::before {
-    outline: 2px solid var(--secondary-color); /* Thinner outline */
-    transition: outline-color 0.15s ease-in-out; /* Faster transition */
+    outline: 3px solid var(--secondary-color);
+    transition: outline-color 0.4s ease-in-out, transform 0.4s ease-in-out;
+    transform-origin: center;
+    animation: subtle-pulse 2s infinite alternate ease-in-out; /* Smoother, alternate pulse */
 }
 
-/* Game Controls - Stylish and Functional, Mobile Friendly */
+@keyframes subtle-pulse {
+    0% { transform: scale(1); outline-color: var(--secondary-color); }
+    100% { transform: scale(1.1); outline-color: var(--highlight-color); }
+}
+
+/* Game Controls - Intuitively Placed and Styled - Mobile First */
 .game-controls {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    margin-top: 15px; /* Reduced top margin */
+    margin-bottom: 30px; /* Reduced bottom margin */
 }
 
 .message {
-    font-size: 1.1em; /* Slightly smaller font size */
-    margin-bottom: 15px; /* Reduced bottom margin */
+    font-size: 1.3em; /* Slightly smaller font */
+    margin-bottom: 20px; /* Reduced margin */
     color: var(--accent-color);
     font-weight: bold;
-    transition: color var(--transition-speed), transform 0.15s ease-in-out; /* Faster transition */
-    animation-duration: 0.6s; /* Slightly faster animation */
-    animation-timing-function: ease-out;
+    transition: color var(--transition-speed), transform 0.3s ease-in-out, text-shadow 0.3s ease-in-out;
+    min-height: 1.4em;
+    letter-spacing: 0.4px; /* Reduced letter spacing */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Reduced shadow */
 }
 
-body.dark-mode .message {
-    color: var(--primary-color);
+.message:hover {
+    transform: scale(1.03); /* Reduced hover */
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5); /* Reduced shadow */
 }
 
-.message.announce {
-    animation-name: fadeInUp;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px); /* Reduced distance */
+/* Media Queries for Larger Mobile Screens and Tablets - Progressive Enhancement */
+@media screen and (min-width: 600px) {
+    body {
+        padding: 20px;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
-#reset-button {
-    padding: 10px 20px; /* Further reduced padding */
-    font-size: 1em; /* Slightly smaller font size */
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: background-color var(--transition-speed), transform 0.15s cubic-bezier(0.4, 0.0, 0.2, 1), box-shadow var(--transition-speed); /* Faster transition */
-    box-shadow: 0 3px 8px var(--shadow-light); /* Reduced shadow */
-    font-weight: bold;
-    letter-spacing: 0.3px; /* Reduced letter spacing */
-}
-
-body.dark-mode #reset-button {
-    background-color: var(--secondary-color);
-    color: var(--text-light);
-    box-shadow: 0 3px 8px var(--shadow-dark);
-}
-
-#reset-button:hover {
-    transform: scale(1.03); /* Reduced scale */
-    box-shadow: 0 5px 10px var(--shadow-light); /* Reduced shadow */
-}
-
-#reset-button:active {
-    transform: scale(0.99);
-    box-shadow: 0 2px 6px var(--shadow-light); /* Reduced shadow */
-}
-
-/* Footer Styles - Understated Elegance, Mobile Scaled */
-footer {
-    margin-top: 20px; /* Reduced top margin */
-    padding: 12px 0; /* Reduced padding */
-    font-size: 0.85em; /* Smaller font size */
-    color: #999;
-    border-top: 1px solid #ddd;
-    transition: border-color var(--transition-speed), color var(--transition-speed);
-}
-
-body.dark-mode footer {
-    border-top: 1px solid #555;
-    color: #aaa;
-}
-
-footer p {
-    margin: 0;
-    text-align: center;
-}
-
-footer i {
-    color: var(--accent-color);
-    animation: heartBeat 2s infinite; /* Slightly slower heartbeat */
-}
-
-@keyframes heartBeat {
-    0% { transform: scale(1); }
-    14% { transform: scale(1.05); } /* Reduced scale */
-    28% { transform: scale(1); }
-    42% { transform: scale(1.05); }
-    70% { transform: scale(1); }
-}
-
-/* Utility Classes */
-.visually-hidden {
-    position: absolute !important;
-    clip: rect(1px, 1px, 1px, 1px);
-    padding: 0 !important;
-    border: 0 !important;
-    height: 1px !important;
-    width: 1px !important;
-    overflow: hidden;
-}
-
-/*  Media Query for Larger Screens - Adjusted Breakpoint */
-@media (min-width: 600px) {
     .container {
-        padding: 40px;
-        margin: 40px auto;
+        padding: 35px;
+        max-width: 700px;
+        margin-bottom: 35px;
+    }
+
+    header {
+        margin-bottom: 30px;
+        padding-bottom: 15px;
     }
 
     h1 {
-        font-size: 2.5em;
-        letter-spacing: 1px;
+        font-size: 3em;
+        letter-spacing: 0.8px;
+    }
+
+    #theme-toggle {
+        font-size: 2.4em;
+        padding: 11px;
     }
 
     .game-info {
+        flex-direction: row;
+        justify-content: space-between;
         margin-bottom: 30px;
+        padding: 15px;
     }
 
-    .game-board {
-        width: 500px;
-        height: 500px;
-        margin-bottom: 20px;
-        border-radius: 14px;
+    .score {
+        margin-bottom: 0;
     }
 
     .player-score {
-        padding: 10px 18px;
-        font-size: 0.9em;
-        margin: 0 8px;
+        padding: 14px 24px;
+        margin: 0 12px;
+        font-size: 1.05em;
+    }
+
+    .game-mode {
+        margin-left: 20px;
     }
 
     .game-mode fieldset {
-        padding: 15px;
-        font-size: 0.95em;
+        padding: 22px;
+        margin-bottom: 15px;
     }
 
     .game-mode legend {
-        font-size: 1em;
+        font-size: 1.15em;
+        padding: 0 18px;
     }
 
     .game-mode label {
-        margin: 0 12px;
-        font-size: 0.9em;
+        margin: 0 18px;
+        font-size: 1.05em;
     }
 
     #ai-difficulty {
-        padding: 8px 16px;
-        font-size: 0.9em;
+        padding: 12px 24px;
+        font-size: 1.05em;
+        margin-top: 12px;
+    }
+
+    .game-board {
+        max-width: 500px;
+        margin-bottom: 40px;
+    }
+
+    .point::before {
+        width: 18px;
+        height: 18px;
+    }
+
+    .point.blue::before,
+    .point.red::before {
+        width: 30px;
+        height: 30px;
     }
 
     .message {
-        font-size: 1.2em;
+        font-size: 1.4em;
+        margin-bottom: 22px;
+        letter-spacing: 0.5px;
+    }
+}
+
+/* Media Queries for Desktops - Fine Tuning */
+@media screen and (min-width: 992px) {
+    .container {
+        max-width: 850px;
+    }
+
+    header {
+        margin-bottom: 35px;
+        padding-bottom: 18px;
+    }
+
+    h1 {
+        font-size: 3.2em;
+    }
+
+    #theme-toggle {
+        font-size: 2.6em;
+        padding: 12px;
+    }
+
+    .game-info {
+        margin-bottom: 35px;
+        padding: 18px;
+    }
+
+    .player-score {
+        padding: 16px 26px;
+        margin: 0 15px;
+        font-size: 1.1em;
+    }
+
+    .game-mode {
+        margin-left: 30px;
+    }
+
+    .game-mode fieldset {
+        padding: 25px;
         margin-bottom: 20px;
     }
 
-    #reset-button {
-        padding: 12px 24px;
+    .game-mode legend {
+        font-size: 1.2em;
+        padding: 0 20px;
+    }
+
+    .game-mode label {
+        margin: 0 20px;
         font-size: 1.1em;
-        letter-spacing: 0.5px;
     }
 
-    footer {
-        padding: 15px 0;
-        font-size: 0.9em;
+    #ai-difficulty {
+        padding: 14px 28px;
+        font-size: 1.1em;
+        margin-top: 15px;
+    }
+
+    .game-board {
+        max-width: 550px;
+        margin-bottom: 45px;
+    }
+
+    .point::before {
+        width: 20px;
+        height: 20px;
+    }
+
+    .point.blue::before,
+    .point.red::before {
+        width: 32px;
+        height: 32px;
+    }
+
+    .message {
+        font-size: 1.5em;
+        margin-bottom: 25px;
+        letter-spacing: 0.6px;
     }
 }
+/* ... your existing style.css ... */
 
-/* Animations and Transitions Enhancement - Optimized for Mobile */
+/* ... other styles ... */
 
-/*  Smooth Piece Movement (consider adding JavaScript for actual movement) */
-.point.moving-piece::before {
-    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55), top 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55), left 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.15s ease-in-out; /* Faster transition */
+.container.fullscreen {
+    max-width: none;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column; /* Changed to column */
+    justify-content: center;
+    align-items: center;
+    box-shadow: none;
+    margin: 0;
 }
 
-/* Subtle Hover Effect on Points */
-.point:not(.empty):hover::before {
-    transform: scale(1.05);
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4); /* Reduced shadow */
+.container.fullscreen header {
+    display: none;
 }
 
-/*  Visual Feedback for Valid Moves */
-.point.valid-move::before {
-    border: 2px dashed var(--highlight-color); /* Thinner border */
-    transition: border-color 0.25s ease-in-out; /* Faster transition */
+.container.fullscreen main.game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px 0; /* Add some vertical margin */
 }
 
-/*  Animation for Mill Formation */
-.mill-formed .point::before {
-    animation: mill-indicator 0.8s ease-out forwards; /* Faster animation */
+.container.fullscreen .game-board {
+    box-shadow: none;
+    border-radius: 0;
+    margin: 0; /* Remove side margins */
 }
 
-@keyframes mill-indicator {
-    0% { transform: scale(1); box-shadow: 0 0 8px var(--highlight-color); } /* Reduced glow */
-    50% { transform: scale(1.1); box-shadow: 0 0 15px var(--highlight-color); } /* Reduced glow and scale */
-    100% { transform: scale(1); box-shadow: 0 0 8px var(--highlight-color); }
+.container.fullscreen .game-controls {
+    display: none;
+}
+
+.container.fullscreen footer {
+    display: none;
+}
+
+.fullscreen-info {
+    display: none;
+    width: 100%;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fullscreen-info.top {
+    order: 0; /* Ensure it's on top */
+}
+
+.fullscreen-info.bottom {
+    order: 2; /* Ensure it's on the bottom */
+}
+
+.container.fullscreen .game-info {
+    display: none; /* Hide the original game info in fullscreen */
+}
+
+.fullscreen-info .player-info {
+    display: flex;
+    align-items: center;
+}
+
+.fullscreen-info .remaining-pieces {
+    font-size: 1.1em;
+    margin-right: 15px;
+}
+
+.fullscreen-info .turn-indicator {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    margin-right: 10px;
+    transition: border-color var(--transition-speed);
+}
+
+.fullscreen-info.top .turn-indicator {
+    border-color: var(--piece-red);
+}
+
+.fullscreen-info.bottom .turn-indicator {
+    border-color: var(--piece-blue);
+}
+
+.fullscreen-info .turn-indicator.active {
+    border-color: var(--highlight-color);
+    box-shadow: 0 0 8px var(--highlight-color);
+}
+
+.red-piece-icon {
+    color: var(--piece-red);
+}
+
+.blue-piece-icon {
+    color: var(--piece-blue);
+}
+/* ... your existing style.css ... */
+
+.game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.game-controls.top-controls {
+    display: flex;
+    justify-content: flex-start; /* Align to the left */
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.game-controls.bottom-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.game-board-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px; /* Space below the board */
+}
+
+.remaining-pieces-below-board {
+    font-weight: bold;
+    margin-top: 10px;
+    color: var(--piece-blue);
+}
+
+/* Style for remaining pieces */
+.game-controls .player-info {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.game-controls .remaining-pieces {
+    margin-left: 10px;
+}
+
+.game-controls .turn-indicator {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    margin-right: 10px;
+    transition: border-color var(--transition-speed);
+}
+
+.game-controls.top-controls .turn-indicator {
+    border-color: var(--piece-red);
+}
+
+.game-controls .turn-indicator.active {
+    border-color: var(--highlight-color);
+    box-shadow: 0 0 8px var(--highlight-color);
+}
+
+.game-controls.bottom-controls .message.active-turn {
+    color: var(--highlight-color);
+    text-shadow: 0 0 10px var(--highlight-color);
+    transition: color var(--transition-speed), text-shadow var(--transition-speed);
+}
+
+.red-piece-icon {
+    color: var(--piece-red);
+}
+
+.blue-piece-icon {
+    color: var(--piece-blue);
+}
+
+/* Fullscreen styles remain mostly the same */
+.container.fullscreen {
+    max-width: none;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: none;
+    margin: 0;
+}
+
+.container.fullscreen header {
+    display: none;
+}
+
+.container.fullscreen main.game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+}
+
+.container.fullscreen .game-board-container {
+    margin-bottom: 20px;
+}
+
+.container.fullscreen .game-board {
+    box-shadow: none;
+    border-radius: 0;
+    margin: 0;
+}
+
+.container.fullscreen .game-controls.top-controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.container.fullscreen .game-controls.bottom-controls {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.container.fullscreen .game-info {
+    display: none;
+}
+/* ... your existing style.css ... */
+
+/* ... other styles ... */
+
+.container.fullscreen {
+    max-width: none;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column; /* Changed to column */
+    justify-content: center;
+    align-items: center;
+    box-shadow: none;
+    margin: 0;
+}
+
+.container.fullscreen header {
+    display: none;
+}
+
+.container.fullscreen main.game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px 0; /* Add some vertical margin */
+}
+
+.container.fullscreen .game-board {
+    box-shadow: none;
+    border-radius: 0;
+    margin: 0; /* Remove side margins */
+}
+
+.container.fullscreen .game-controls {
+    display: none;
+}
+
+.container.fullscreen footer {
+    display: none;
+}
+
+.fullscreen-info {
+    display: none;
+    width: 100%;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fullscreen-info.top {
+    order: 0; /* Ensure it's on top */
+}
+
+.fullscreen-info.bottom {
+    order: 2; /* Ensure it's on the bottom */
+}
+
+.container.fullscreen .game-info {
+    display: none; /* Hide the original game info in fullscreen */
+}
+
+.fullscreen-info .player-info {
+    display: flex;
+    align-items: center;
+}
+
+.fullscreen-info .remaining-pieces {
+    font-size: 1.1em;
+    margin-right: 15px;
+}
+
+.fullscreen-info .turn-indicator {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    margin-right: 10px;
+    transition: border-color var(--transition-speed);
+}
+
+.fullscreen-info.top .turn-indicator {
+    border-color: var(--piece-red);
+}
+
+.fullscreen-info.bottom .turn-indicator {
+    border-color: var(--piece-blue);
+}
+
+.fullscreen-info .turn-indicator.active {
+    border-color: var(--highlight-color);
+    box-shadow: 0 0 8px var(--highlight-color);
+}
+
+.red-piece-icon {
+    color: var(--piece-red);
+}
+
+.blue-piece-icon {
+    color: var(--piece-blue);
+}
+/* ... your existing style.css ... */
+
+/* Initially hide the fullscreen game mode controls */
+.fullscreen-info .fullscreen-game-mode {
+    display: none;
+    margin-left: 20px; /* Adjust spacing as needed */
+}
+
+/* Show the fullscreen game mode controls only when the container has the fullscreen class */
+.container.fullscreen .fullscreen-info .fullscreen-game-mode {
+    display: block;
+}
+
+/* Adjust the original game-mode to hide in fullscreen */
+.container.fullscreen .game-info .game-mode {
+    display: none;
+}
+
+/* style.css - The World's Most Exquisitely Designed Nine Men's Morris Website - A Mobile Masterpiece, Reforged */
+
+/* ... your existing styles ... */
+
+/* --- Remaining Pieces Styling --- */
+
+/* Initially hide the fullscreen info (containing remaining pieces) in non-fullscreen mode */
+.fullscreen-info {
+    display: none;
+    width: 100%;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fullscreen-info.top {
+    order: 0;
+}
+
+.fullscreen-info.bottom {
+    order: 2;
+}
+
+/* Show fullscreen info when the container is in fullscreen */
+.container.fullscreen .fullscreen-info {
+    display: flex;
+}
+
+/* Hide the original score display in fullscreen */
+.container.fullscreen .game-info .score {
+    display: none;
+}
+
+.fullscreen-info .player-info {
+    display: flex;
+    align-items: center;
+}
+
+.fullscreen-info .remaining-pieces {
+    font-size: 1.1em;
+    margin-right: 15px;
+}
+
+.fullscreen-info .turn-indicator {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    margin-right: 10px;
+    transition: border-color var(--transition-speed);
+}
+
+.fullscreen-info.top .turn-indicator {
+    border-color: var(--piece-red);
+}
+
+.fullscreen-info.bottom .turn-indicator {
+    border-color: var(--piece-blue);
+}
+
+.fullscreen-info .turn-indicator.active {
+    border-color: var(--highlight-color);
+    box-shadow: 0 0 8px var(--highlight-color);
+}
+
+.red-piece-icon {
+    color: var(--piece-red);
+}
+
+.blue-piece-icon {
+    color: var(--piece-blue);
+}
+
+/* --- Fullscreen Toggle Button Styling --- */
+
+/* Style the fullscreen toggle button */
+#fullscreen-toggle {
+    background: none;
+    border: none;
+    font-size: 1.8em; /* Adjust size as needed */
+    cursor: pointer;
+    color: var(--text-light);
+    transition: color var(--transition-speed), transform 0.3s ease-in-out;
+    padding: 8px; /* Adjust padding */
+}
+
+body.dark-mode #fullscreen-toggle {
+    color: var(--text-dark);
+}
+
+#fullscreen-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* Change icon when in fullscreen mode */
+.container.fullscreen #fullscreen-toggle .fa-expand::before {
+    content: "\f2d0"; /* Font Awesome 'compress' icon */
+}
+
+.container.fullscreen #fullscreen-toggle .fa-compress::before {
+    content: "\f0b2"; /* Font Awesome 'expand' icon - fallback if compress fails */
+}
+
+/* --- Reset Button Styling --- */
+#reset-button {
+    padding: 12px 24px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: var(--secondary-color);
+    background-color: var(--accent-color);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    box-shadow: 0 4px 10px var(--shadow-light);
+    transition: background-color var(--transition-speed), color var(--transition-speed), box-shadow 0.3s ease-in-out, transform 0.2s ease-in-out;
+    outline: none;
+}
+
+#reset-button:hover {
+    background-color: var(--primary-color);
+    box-shadow: 0 6px 14px var(--shadow-light);
+    transform: translateY(-2px);
+}
+
+#reset-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px var(--shadow-light);
+}
+
+body.dark-mode #reset-button {
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+    box-shadow: 0 4px 10px var(--shadow-dark);
+}
+
+body.dark-mode #reset-button:hover {
+    background-color: var(--text-dark);
+    color: var(--accent-color);
+    box-shadow: 0 6px 14px var(--shadow-dark);
+}
+
+body.dark-mode #reset-button:active {
+    box-shadow: 0 2px 6px var(--shadow-dark);
+}
+
+/* --- Fullscreen Specific Layout Adjustments --- */
+.container.fullscreen {
+    /* Ensure proper layout in fullscreen */
+    justify-content: center; /* Center content vertically */
+}
+
+.container.fullscreen main.game-area {
+    /* Ensure game area takes appropriate space */
+    flex: 1; /* Allow it to grow and take available space */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Center the game board within the area */
+}
+
+.container.fullscreen .game-board {
+    /* Adjust board size in fullscreen if needed */
+    max-width: 80vh; /* Example: Limit board width to 80% of viewport height */
+    max-height: 80vh; /* Example: Limit board height to 80% of viewport height */
+}
+
+.container.fullscreen .game-controls {
+    /* Style the controls in fullscreen if you want them visible */
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* Add some spacing */
+}
+
+.container.fullscreen .game-controls #reset-button {
+    /* Adjust reset button styling in fullscreen if needed */
 }
