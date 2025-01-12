@@ -11,7 +11,7 @@
     <div class="container">
         <header>
             <h1>Nine Men's Morris</h1>
-            <div class="theme-toggle-container">
+            <div class="header-controls">
                 <button id="theme-toggle" aria-label="Toggle Dark/Light Theme">🌙</button>
             </div>
         </header>
@@ -33,34 +33,280 @@
                         <input type="radio" id="player-vs-ai" name="game-mode" value="ai">
                         Player vs AI
                     </label>
-                    <label for="ai-difficulty" class="visually-hidden">AI Difficulty</label>
-                    <select id="ai-difficulty" aria-label="Select AI Difficulty">
-                        <option value="easy">Easy</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="hard">Hard</option>
-                    </select>
                 </fieldset>
             </div>
         </section>
 
-        <main class="game-area">
-            <div class="game-board">
-                <img id="board-img" src="board.png" alt="Nine Men's Morris Board">
-                <div class="points" aria-label="Game Board">
-                    <!-- Points will be generated here by JavaScript -->
+        <div class="fullscreen-info top">
+            <div class="player-info red-info">
+                <div class="turn-indicator"></div>
+                <div class="remaining-pieces">
+                    Remaining: <span id="red-pieces-display">9</span> <i class="fas fa-circle red-piece-icon"></i>
                 </div>
             </div>
+            <div class="game-mode fullscreen-game-mode">
+                <fieldset>
+                    <legend>Game Mode</legend>
+                    <label>
+                        <input type="radio" id="player-vs-player-fs" name="game-mode-fs" value="player">
+                        Player vs Player
+                    </label>
+                    <label>
+                        <input type="radio" id="player-vs-ai-fs" name="game-mode-fs" value="ai">
+                        Player vs AI
+                    </label>
+                </fieldset>
+            </div>
+        </div>
+
+       <div class="game-area">
+            <div class="fullscreen-info bottom">
+                <div class="player-info blue-info">
+                    <div class="turn-indicator"></div>
+                    <div class="remaining-pieces">
+                        Remaining: <span id="blue-pieces-display">9</span> <i class="fas fa-circle blue-piece-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="game-board-container">
+                <div class="game-board">
+                    <img id="board-img" src="board.png" alt="Nine Men's Morris Board">
+                    <div class="points" aria-label="Game Board">
+                        <!-- Points will be generated here by JavaScript -->
+                    </div>
+                </div>
+                <button id="fullscreen-toggle" aria-label="Toggle Fullscreen"><i class="fas fa-expand"></i></button>
+            </div>
+
             <div class="game-controls">
                 <div class="message" role="status" aria-live="polite">Black's turn to place piece.</div>
                 <button id="reset-button">Reset Game</button>
             </div>
-        </main>
+        </div>
 
         <footer>
-            <p>© MORIS - Crafted with <i class="fas fa-heart"></i></p>
+            <p>© [Your Name/Website] - Crafted with <i class="fas fa-heart"></i></p>
         </footer>
     </div>
     <script src="game.js"></script>
     <script src="ai.js" type="module"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fullscreenToggle = document.getElementById('fullscreen-toggle');
+            const container = document.querySelector('.container');
+            const gameInfo = document.querySelector('.game-info');
+            const gameArea = document.querySelector('.game-area');
+            const gameBoard = document.querySelector('.game-board');
+            const gameControls = document.querySelector('.game-controls');
+            const footer = document.querySelector('footer');
+            const headerControls = document.querySelector('header .header-controls');
+            const headerTitle = document.querySelector('header h1');
+            const fullscreenInfoTop = document.querySelector('.fullscreen-info.top');
+            const fullscreenInfoBottom = document.querySelector('.fullscreen-info.bottom');
+            const redPiecesDisplay = document.getElementById('red-pieces-display');
+            const bluePiecesDisplay = document.getElementById('blue-pieces-display');
+            const topTurnIndicator = document.querySelector('.fullscreen-info.top .turn-indicator');
+            const bottomTurnIndicator = document.querySelector('.fullscreen-info.bottom .turn-indicator');
+            const playerVsPlayerRadio = document.getElementById('player-vs-player');
+            const playerVsAIRadio = document.getElementById('player-vs-ai');
+            const playerVsPlayerFsRadio = document.getElementById('player-vs-player-fs');
+            const playerVsAiFsRadio = document.getElementById('player-vs-ai-fs');
+            const gameBoardContainer = document.querySelector('.game-board-container');
+
+            function updateFullscreenInfo() {
+                redPiecesDisplay.textContent = redPiecesLeft;
+                bluePiecesDisplay.textContent = bluePiecesLeft;
+                if (currentPlayer === 'red') {
+                    topTurnIndicator.classList.add('active');
+                    bottomTurnIndicator.classList.remove('active');
+                } else {
+                    bottomTurnIndicator.classList.add('active');
+                    topTurnIndicator.classList.remove('active');
+                }
+            }
+
+            fullscreenToggle.addEventListener('click', () => {
+                container.classList.toggle('fullscreen');
+                if (container.classList.contains('fullscreen')) {
+                    fullscreenToggle.innerHTML = '<i class="fas fa-compress"></i>';
+                    fullscreenToggle.setAttribute('aria-label', 'Exit Fullscreen');
+                    gameInfo.style.display = 'none';
+                    gameControls.style.display = 'none';
+                    footer.style.display = 'none';
+                    headerControls.style.display = 'none';
+                    headerTitle.style.display = 'none';
+                    gameBoardContainer.style.maxWidth = 'none';
+                    gameBoardContainer.style.width = 'auto';
+                    gameBoard.style.maxWidth = '80vh';
+                    fullscreenInfoTop.style.display = 'flex';
+                    fullscreenInfoBottom.style.display = 'flex';
+                    updateFullscreenInfo();
+                     playerVsPlayerFsRadio.checked = (gameMode === 'player');
+                    playerVsAiFsRadio.checked = (gameMode === 'ai');
+
+                } else {
+                    fullscreenToggle.innerHTML = '<i class="fas fa-expand"></i>';
+                    fullscreenToggle.setAttribute('aria-label', 'Toggle Fullscreen');
+                    gameInfo.style.display = 'flex';
+                    gameControls.style.display = 'flex';
+                    footer.style.display = 'block';
+                    headerControls.style.display = 'flex';
+                    headerTitle.style.display = 'block';
+                    gameBoardContainer.style.maxWidth = '100%';
+                    gameBoardContainer.style.width = 'auto';
+                    gameBoard.style.maxWidth = '450px';
+                    fullscreenInfoTop.style.display = 'none';
+                    fullscreenInfoBottom.style.display = 'none';
+                     playerVsPlayerRadio.checked = (gameMode === 'player');
+                    playerVsAIRadio.checked = (gameMode === 'ai');
+                }
+            });
+
+             // Update fullscreen info on game state changes
+            const originalSwitchTurn = switchTurn;
+            switchTurn = () => {
+                originalSwitchTurn();
+                if (container.classList.contains('fullscreen')) {
+                    updateFullscreenInfo();
+                }
+            };
+
+            const originalHandlePlacement = handlePlacement;
+            handlePlacement = (pointIndex) => {
+                originalHandlePlacement(pointIndex);
+                if (container.classList.contains('fullscreen')) {
+                    updateFullscreenInfo();
+                }
+            };
+
+             const originalRemoveOpponentPiece = removeOpponentPiece;
+            removeOpponentPiece = (pointIndex) => {
+                originalRemoveOpponentPiece(pointIndex);
+                if (container.classList.contains('fullscreen')) {
+                    updateFullscreenInfo();
+                }
+            };
+
+             playerVsPlayerRadio.addEventListener('change', () => {
+                gameMode = 'player';
+                resetGame();
+            });
+
+            playerVsAIRadio.addEventListener('change', () => {
+                gameMode = 'ai';
+                resetGame();
+                if (currentPlayer === 'red' && gameMode === 'ai') {
+                    setTimeout(makeNextAIMove, 500);
+                }
+            });
+
+            playerVsPlayerFsRadio.addEventListener('change', () => {
+                gameMode = 'player';
+                resetGame();
+            });
+
+            playerVsAiFsRadio.addEventListener('change', () => {
+                gameMode = 'ai';
+                resetGame();
+                if (currentPlayer === 'red' && gameMode === 'ai') {
+                    setTimeout(makeNextAIMove, 500);
+                }
+            });
+
+            // Initial call to set up initial state if already in fullscreen (for development)
+            if (container.classList.contains('fullscreen')) {
+                updateFullscreenInfo();
+                 playerVsPlayerFsRadio.checked = (gameMode === 'player');
+                playerVsAiFsRadio.checked = (gameMode === 'ai');
+            }
+             playerVsPlayerRadio.checked = (gameMode === 'player');
+            playerVsAIRadio.checked = (gameMode === 'ai');
+        });
+    </script>
+    <style>
+        .game-board-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 450px;
+            margin: 20px auto;
+        }
+
+        #fullscreen-toggle {
+            position: absolute;
+            right: -50px; /* Adjust as needed */
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px 15px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        #fullscreen-toggle:hover {
+            background-color: #e0e0e0;
+        }
+
+        .container.fullscreen .game-board-container {
+            max-width: none;
+            width: auto;
+        }
+
+        .container.fullscreen #fullscreen-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 100;
+            background-color: rgba(240, 240, 240, 0.8);
+        }
+
+        .container.fullscreen .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container.fullscreen .game-board-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .container.fullscreen .game-board {
+            margin-right: 60px; /* Adjust to make space for the button */
+        }
+
+        .fullscreen-info {
+            display: none; /* Hide by default */
+        }
+
+        .container.fullscreen .fullscreen-info {
+            display: flex !important;
+            justify-content: space-around;
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        .container.fullscreen .fullscreen-info.top {
+            order: 0;
+        }
+
+        .container.fullscreen .fullscreen-info.bottom {
+            order: 2;
+        }
+
+        .container.fullscreen .game-board-container {
+            order: 1;
+        }
+
+        .container.fullscreen .fullscreen-game-mode {
+            margin: 0;
+        }
+    </style>
 </body>
 </html>
